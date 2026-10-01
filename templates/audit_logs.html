@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ t('audit_logs_title') }}
+{% endblock %}
+
+{% block page_heading %}
+{{ t('audit_logs_title') }}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>{{ t('audit_logs_title') }}</h2>
+        <p>{{ t('audit_logs_description') }}</p>
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>{{ t('username') }}</th>
+                    <th>{{ t('table') }}</th>
+                    <th>{{ t('record_id') }}</th>
+                    <th>{{ t('action') }}</th>
+                    <th>{{ t('old_data') }}</th>
+                    <th>{{ t('new_data') }}</th>
+                    <th>{{ t('date_time') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td><strong>{{ log.username or '-' }}</strong></td>
+                    <td><code>{{ log.table_name }}</code></td>
+                    <td>{{ log.record_id }}</td>
+                    <td>
+                        {% set act = log.action|lower %}
+                        {% if act in ['insert', 'create'] %}
+                            <span style="display:inline-block; padding:3px 9px; border-radius:6px; background:#e8f5e9; color:#2e7d32; font-size:0.8rem; font-weight:700;">{{ log.action }}</span>
+                        {% elif act == 'update' %}
+                            <span style="display:inline-block; padding:3px 9px; border-radius:6px; background:#e3f2fd; color:#1565c0; font-size:0.8rem; font-weight:700;">{{ log.action }}</span>
+                        {% elif act == 'delete' %}
+                            <span style="display:inline-block; padding:3px 9px; border-radius:6px; background:#ffebee; color:#c62828; font-size:0.8rem; font-weight:700;">{{ log.action }}</span>
+                        {% else %}
+                            <span style="display:inline-block; padding:3px 9px; border-radius:6px; background:#f0f3f1; color:var(--ink); font-size:0.8rem; font-weight:700;">{{ log.action }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="max-width:280px; word-break:break-word; font-family:monospace; font-size:0.85rem; color:#556b5d;">
+                        {{ log.old_data or '-' }}
+                    </td>
+                    <td style="max-width:280px; word-break:break-word; font-family:monospace; font-size:0.85rem; color:var(--stalk-dark);">
+                        {{ log.new_data or '-' }}
+                    </td>
+                    <td style="white-space:nowrap; font-size:0.85rem; color:var(--muted);">
+                        {{ log.created_at }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--muted);">
+                        {{ t('no_audit_logs') }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

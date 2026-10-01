@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ t('reports_title') }}
+{% endblock %}
+
+{% block page_heading %}
+{{ t('reports_title') }}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin: 28px 0 16px;
+    flex-wrap: wrap;
+}
+
+.report-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.report-stat-card {
+    background: var(--surface);
+    padding: 22px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.report-stat-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: var(--stalk);
+}
+
+.report-stat-card.tone-amber::before {
+    background: var(--juice);
+}
+
+.report-stat-card h3 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.report-stat-card .val {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--stalk-dark);
+    letter-spacing: -0.02em;
+}
+
+.empty-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1.5px dashed var(--line);
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+}
+
+.empty-card h3 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+
+@media (max-width: 650px) {
+    .report-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>📈 {{ t('custom_date_report') }}</h2>
+        <p>{{ t('reports_description') }}</p>
+    </div>
+</div>
+
+<div class="form-card" style="margin-bottom: 24px;">
+    <form method="GET" action="{{ url_for('reports') }}">
+        <input type="hidden" name="report_type" value="custom">
+
+        <div class="report-filter-grid">
+            <div class="form-group">
+                <label for="season">{{ t('season') }}</label>
+                <select name="season" id="season">
+                    <option value="{{ season }}">{{ season }}</option>
+                    {% for s in seasons|default([]) %}
+                        {% if s.season_name != season %}
+                            <option value="{{ s.season_name }}">{{ s.season_name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="from_date">{{ t('from_date') }}</label>
+                <input
+                    type="date"
+                    name="from_date"
+                    id="from_date"
+                    value="{{ from_date or '' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="to_date">{{ t('to_date') }}</label>
+                <input
+                    type="date"
+                    name="to_date"
+                    id="to_date"
+                    value="{{ to_date or '' }}"
+                >
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+            🔍 {{ t('generate_report') }}
+        </button>
+    </form>
+</div>
+
+{% if report_data %}
+<div class="report-header">
+    <div>
+        <h2>{{ t('report_summary') }}</h2>
+        <p style="color: var(--muted); font-size: 0.95rem;">
+            {{ t('season') }}: <strong>{{ season }}</strong>
+            {% if start_date and end_date %}
+                &nbsp;|&nbsp;
+                {{ t('report_period') }}: <strong>{{ start_date }}</strong> — <strong>{{ end_date }}</strong>
+            {% endif %}
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for(
+            'reports_pdf',
+            report_type='custom',
+            season=season,
+            from_date=from_date,
+            to_date=to_date
+        ) }}"
+        class="btn-secondary"
+        target="_blank"
+    >
+        📄 {{ t('download_pdf') }}
+    </a>
+</div>
+
+<div class="report-stats-grid">
+    <div class="report-stat-card">
+        <h3>{{ t('total_nondni_label') }}</h3>
+        <div class="val">{{ total_nondni }}</div>
+    </div>
+
+    <div class="report-stat-card tone-amber">
+        <h3>{{ t('total_planting_area') }}</h3>
+        <div class="val">{{ total_area }}</div>
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>{{ t('farmer_code') }}</th>
+                    <th>{{ t('farmer_name') }}</th>
+                    <th>{{ t('village') }}</th>
+                    <th>{{ t('survey_gat_no') }}</th>
+                    <th>{{ t('planting_date') }}</th>
+                    <th>{{ t('sugarcane_variety') }}</th>
+                    <th>{{ t('crop_type') }}</th>
+                    <th>{{ t('irrigation_method') }}</th>
+                    <th>{{ t('planting_area') }}</th>
+                    <th>{{ t('receipt_no') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report_data %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td><code>{{ row.farmer_code }}</code></td>
+                    <td><strong>{{ row.farmer_name }}</strong></td>
+                    <td>{{ row.village }}</td>
+                    <td>{{ row.survey_gat_no or '-' }}</td>
+                    <td>{{ row.planting_date or '-' }}</td>
+                    <td>{{ row.sugarcane_variety or '-' }}</td>
+                    <td>{{ row.crop_type or '-' }}</td>
+                    <td>{{ row.irrigation_method or '-' }}</td>
+                    <td>{{ row.planting_area or '-' }}</td>
+                    <td>{{ row.receipt_no or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% else %}
+<div class="empty-card">
+    <h3>{{ t('no_report_data') }}</h3>
+    <p>{{ t('select_dates_message') }}</p>
+</div>
+{% endif %}
+
+{% endblock %}

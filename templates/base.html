@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Boss ERP-2{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --stalk: #1f4d3a;
+            --stalk-dark: #123326;
+            --stalk-hover: #194030;
+            --leaf: #7fb069;
+            --juice: #e9b44c;
+            --paper: #f3f6ee;
+            --surface: #ffffff;
+            --ink: #14231c;
+            --muted: #5d6e64;
+            --line: #cdd8cf;
+            --line-subtle: #e5ece6;
+            --error: #b3261e;
+            --error-bg: #fbeceb;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 3px rgba(18, 51, 38, 0.05);
+            --shadow-md: 0 4px 14px rgba(18, 51, 38, 0.08);
+            --shadow-lg: 0 10px 24px rgba(18, 51, 38, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Instrument Sans", system-ui, -apple-system, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--stalk) 0%, var(--stalk-dark) 100%);
+            color: #fff;
+            padding: 24px 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(10, 26, 19, 0.25);
+        }
+
+        .sidebar-header {
+            padding: 0 10px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-header h2 {
+            font-family: "Bricolage Grotesque", sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-header h2::after {
+            content: "•";
+            color: var(--juice);
+            font-size: 1.5rem;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            padding: 11px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.94rem;
+            font-weight: 500;
+            transition: all 0.16s ease;
+        }
+
+        .sidebar nav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(3px);
+        }
+
+        .sidebar nav a.logout {
+            margin-top: auto;
+            color: #ffb4ab;
+            background: rgba(179, 38, 30, 0.2);
+            border: 1px solid rgba(179, 38, 30, 0.4);
+        }
+
+        .sidebar nav a.logout:hover {
+            background: var(--error);
+            color: #fff;
+            transform: none;
+        }
+
+        /* ================= MAIN CONTENT AREA ================= */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ================= TOPBAR ================= */
+        .topbar {
+            background: var(--surface);
+            padding: 16px 36px;
+            border-bottom: 1.5px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar h1 {
+            font-family: "Bricolage Grotesque", sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            color: var(--stalk-dark);
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .language-selector {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--paper);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--line);
+            font-size: 0.85rem;
+        }
+
+        .language-selector span {
+            font-weight: 600;
+            color: var(--muted);
+            padding: 0 6px;
+        }
+
+        .language-selector a {
+            text-decoration: none;
+            color: var(--ink);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .language-selector a:hover {
+            background: #e3ebde;
+            color: var(--stalk-dark);
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8eee5;
+            padding: 7px 14px;
+            border-radius: 99px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--stalk-dark);
+            border: 1px solid var(--line);
+        }
+
+        .page-content {
+            padding: 32px 36px;
+            flex: 1;
+        }
+
+        /* ================= SHARED COMPONENT STYLES ================= */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-family: "Bricolage Grotesque", sans-serif;
+            font-size: 1.65rem;
+            letter-spacing: -0.02em;
+            color: var(--stalk-dark);
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .table-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            border: 1.5px solid var(--line);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.92rem;
+        }
+
+        th {
+            background: #f7f9f5;
+            padding: 12px 14px;
+            font-weight: 600;
+            color: var(--muted);
+            text-align: left;
+            border-bottom: 1.5px solid var(--line);
+            letter-spacing: 0.02em;
+        }
+
+        td {
+            padding: 13px 14px;
+            border-bottom: 1px solid var(--line-subtle);
+            color: var(--ink);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fafcf8;
+        }
+
+        /* Common buttons */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--stalk);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--stalk-dark);
+            box-shadow: 0 4px 12px rgba(18, 51, 38, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            color: var(--ink);
+            border: 1.5px solid var(--line);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f3f6ee;
+            border-color: #abbcb0;
+        }
+
+        /* Form cards */
+        .form-card {
+            background: var(--surface);
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid var(--line);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--ink);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-sm);
+            font: inherit;
+            font-size: 0.95rem;
+            color: var(--ink);
+            background: #fff;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-group input:hover {
+            border-color: #a9bbae;
+        }
+
+        .form-group input:focus {
+            border-color: var(--stalk);
+            box-shadow: 0 0 0 4px rgba(31, 77, 58, 0.14);
+        }
+
+        .form-group input[readonly] {
+            background: #f3f6ee;
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        /* Accessibility focus ring */
+        :focus-visible {
+            outline: 3px solid var(--juice);
+            outline-offset: 2px;
+        }
+
+        /* ================= MOBILE ================= */
+        @media (max-width: 860px) {
+            body { flex-direction: column; }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+            }
+            .main-content { margin-left: 0; }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px;
+                gap: 12px;
+            }
+            .topbar-right {
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            .page-content { padding: 18px; }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Boss ERP-2</h2>
+        </div>
+
+        <nav>
+            <a href="{{ url_for('dashboard') }}">📊 {{ t('dashboard') }}</a>
+            <a href="{{ url_for('farmers') }}">👨‍🌾 {{ t('farmers') }}</a>
+            <a href="{{ url_for('nondni') }}">📝 {{ t('nondni') }}</a>
+            <a href="{{ url_for('nondnis') }}">📋 {{ t('nondni_records') }}</a>
+            <a href="{{ url_for('reports') }}">📈 {{ t('reports') }}</a>
+            <a href="{{ url_for('seasons') }}">🌱 {{ t('seasons') }}</a>
+            <a href="{{ url_for('audit_logs') }}">🕒 {{ t('audit_logs') }}</a>
+            <a href="{{ url_for('change_password') }}">🔐 {{ t('change_password') }}</a>
+            <a href="{{ url_for('logout') }}" class="logout">🚪 {{ t('logout') }}</a>
+        </nav>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <div class="main-content">
+        <header class="topbar">
+            <h1>{% block page_heading %}Sugarcane Management System{% endblock %}</h1>
+
+            <div class="topbar-right">
+                <div class="language-selector">
+                    <span>{{ t('language') }}:</span>
+                    <a href="{{ url_for('set_language', lang='en', next=request.path) }}">English</a>
+                    <a href="{{ url_for('set_language', lang='mr', next=request.path) }}">मराठी</a>
+                    <a href="{{ url_for('set_language', lang='hi', next=request.path) }}">हिन्दी</a>
+                </div>
+
+                <div class="admin-badge">
+                    <span>👤</span> {{ session.get('username', 'Admin') }}
+                </div>
+            </div>
+        </header>
+
+        <main class="page-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
