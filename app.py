@@ -24,7 +24,7 @@ from database import get_db_connection
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "SECRET_KEY=your-long-random-secret")
+app.secret_key = os.environ.get("SECRET_KEY", "SECRET_KEY=K8#vR2!mQ7@xP4$zN9^tL6&cW3*eH5")
 
 
 # ============================================================
