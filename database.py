@@ -1,5 +1,8 @@
 import os
+from dotenv import load_dotenv
 import mysql.connector
+
+load_dotenv()
 
 
 def get_db_connection():
@@ -8,5 +11,5 @@ def get_db_connection():
         port=int(os.environ.get("MYSQLPORT", 3306)),
         user=os.environ["MYSQLUSER"],
         password=os.environ["MYSQLPASSWORD"],
-        database=os.environ["MYSQLDATABASE"]
+        database=os.environ["MYSQLDATABASE"],
     )
