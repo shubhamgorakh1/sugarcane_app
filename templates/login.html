@@ -4,891 +4,801 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sugarcane ERP - Login</title>
+    <title>Sugarcane Company Management - Login</title>
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap"
         rel="stylesheet"
     >
 
     <style>
-        :root {
-            --green-dark: #123326;
-            --green: #1f4d3a;
-            --green-light: #7fb069;
-            --green-soft: #eaf3e7;
-            --cream: #f3f0e6;
-            --white: #ffffff;
-            --text: #17231d;
-            --muted: #66736c;
-            --border: #cfd8d1;
-            --error: #b3261e;
-            --shadow: 0 18px 45px rgba(18, 51, 38, 0.18);
-            --radius: 14px;
-        }
-
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-        }
-
-        html,
-        body {
-            min-height: 100%;
-        }
-
-        body {
-            font-family: "Instrument Sans", system-ui, sans-serif;
-            color: var(--text);
-
-            background:
-                linear-gradient(
-                    rgba(127, 176, 105, 0.28),
-                    rgba(243, 240, 230, 0.75)
-                ),
-                var(--cream);
-
+            background-color: #0d2918;
+            overflow-x: hidden;
             min-height: 100vh;
+            background-image: url(/static/images/sugarcane-field.jpg);
         }
 
-        /* =========================
-           TOP HEADER
-        ========================= */
-
-        .topbar {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            height: 42px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 20px;
-
-            color: var(--green-dark);
-            font-size: 13px;
+        img{
+            background-size: auto;
+            border-radius: 27%;
         }
 
-        .brand-top {
-            font-weight: 700;
-            letter-spacing: 0.02em;
+        .img-wrapper{
+            max-width: 90%;
+            border-radius: 80%;
         }
 
-        .top-links {
-            display: flex;
-            gap: 8px;
-            color: #26352d;
+        .heading-font {
+            font-family: 'Outfit', sans-serif;
         }
 
-        .top-links a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .top-links a:hover {
-            text-decoration: underline;
-        }
-
-        /* =========================
-           MAIN OUTER CONTAINER
-        ========================= */
-
-        .page-wrapper {
-            width: min(1120px, calc(100% - 32px));
-            margin: 0 auto 18px;
-
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.85);
-
-            border-radius: 14px;
-
-            padding: 12px;
-
-            box-shadow: var(--shadow);
-        }
-
-        .login-layout {
-            min-height: 650px;
-
-            display: grid;
-            grid-template-columns: 1.55fr 1fr;
-
-            border-radius: 10px;
-            overflow: hidden;
-
-            background: var(--white);
-        }
-
-        /* =========================
-           LEFT IMAGE / FIELD
-        ========================= */
-
-        .field-panel {
-            position: relative;
-
-            min-height: 650px;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(18, 51, 38, 0.02) 0%,
-                    rgba(18, 51, 38, 0.2) 100%
-                ),
-                url("/static/images/sugarcane-field.jpg")
-                center center / cover no-repeat;
-
-            overflow: hidden;
-        }
-
-        .field-panel::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-
-            background:
-                linear-gradient(
-                    to top,
-                    rgba(18, 51, 38, 0.55),
-                    rgba(18, 51, 38, 0.02) 55%
-                );
-        }
-
-        .field-copy {
-            position: absolute;
-            left: 38px;
-            bottom: 32px;
-
-            z-index: 2;
-
-            color: white;
-            max-width: 420px;
-        }
-
-        .field-copy h1 {
-            font-family: "Bricolage Grotesque", sans-serif;
-            font-size: clamp(2rem, 4vw, 3.2rem);
-            line-height: 1;
-
-            margin-bottom: 10px;
-        }
-
-        .field-copy p {
-            font-size: 0.98rem;
-            line-height: 1.55;
-
-            color: rgba(255, 255, 255, 0.88);
-        }
-
-        /* =========================
-           RIGHT LOGIN PANEL
-        ========================= */
-
-        .login-panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 32px;
-            background: var(--green-dark);
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 365px;
-
-            color: white;
-        }
-
-        /* =========================
-           LOGO
-        ========================= */
-
-        .logo-area {
-            text-align: center;
-            margin-bottom: 18px;
-        }
-
-        .logo-mark {
-            width: 64px;
-            height: 64px;
-
-            margin: 0 auto 10px;
-
-            border: 3px solid var(--green-light);
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 30px;
-
-            color: var(--green-light);
-        }
-
-        .logo-area h2 {
-            font-family: "Bricolage Grotesque", sans-serif;
-            font-size: 1.05rem;
-
-            letter-spacing: 0.04em;
-        }
-
-        .logo-area span {
-            display: block;
-            margin-top: 2px;
-
-            font-size: 0.72rem;
-            color: rgba(255, 255, 255, 0.7);
-            letter-spacing: 0.12em;
-        }
-
-        /* =========================
-           LOGIN TITLE
-        ========================= */
-
-        .login-title {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .login-title h1 {
-            font-family: "Bricolage Grotesque", sans-serif;
-            font-size: clamp(1.7rem, 3vw, 2rem);
-
-            margin-bottom: 7px;
-        }
-
-        .login-title p {
-            color: rgba(255, 255, 255, 0.78);
-            font-size: 0.9rem;
-            line-height: 1.45;
-        }
-
-        /* =========================
-           ERROR
-        ========================= */
-
-        .error-box {
-            margin-bottom: 16px;
-
-            padding: 11px 13px;
-
-            border-radius: 9px;
-
-            background: rgba(255, 235, 235, 0.12);
-            border: 1px solid rgba(255, 180, 180, 0.3);
-
-            color: #ffd4d1;
-
-            font-size: 0.87rem;
-        }
-
-        /* =========================
-           FORM
-        ========================= */
-
-        form {
-            display: grid;
-            gap: 14px;
-        }
-
-        .input-group {
-            position: relative;
-        }
-
-        .input-group input {
-            width: 100%;
-            height: 53px;
-
-            padding: 21px 44px 7px 42px;
-
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 9px;
-
-            background: white;
-
-            color: var(--text);
-
-            outline: none;
-
-            font-family: inherit;
-            font-size: 0.94rem;
-
-            transition:
-                border-color 0.2s,
-                box-shadow 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--green-light);
-
+        .sc-card {
+            background: rgba(255, 255, 255, 0.98);
             box-shadow:
-                0 0 0 3px rgba(127, 176, 105, 0.18);
+                0 25px 60px -15px rgba(0, 0, 0, 0.35),
+                0 10px 20px -5px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        .input-icon {
-            position: absolute;
-
-            left: 13px;
-            top: 50%;
-
-            transform: translateY(-50%);
-
-            font-size: 18px;
-
-            color: var(--green);
-
-            pointer-events: none;
+        .sc-input {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #f8faf9;
+            border-color: #e2e8f0;
         }
 
-        .input-group label {
-            position: absolute;
-
-            left: 42px;
-            top: 17px;
-
-            color: #68746d;
-
-            font-size: 0.82rem;
-
-            pointer-events: none;
-
-            transition:
-                transform 0.18s ease,
-                color 0.18s ease;
+        .sc-input:focus {
+            border-color: #0b6638;
+            box-shadow: 0 0 0 3.5px rgba(11, 102, 56, 0.15);
+            background-color: #ffffff;
         }
 
-        .input-group input:focus + label,
-        .input-group input:not(:placeholder-shown) + label {
-            transform: translateY(-9px) scale(0.78);
-            transform-origin: left top;
+        .sc-btn-primary {
+            background: linear-gradient(180deg, #0b6838 0%, #084c29 100%);
+            box-shadow: 0 6px 18px rgba(11, 104, 56, 0.35);
+            transition: all 0.2s ease;
         }
 
-        .input-group input:focus + label {
-            color: var(--green);
+        .sc-btn-primary:hover {
+            background: linear-gradient(180deg, #0d7942 0%, #0a5a31 100%);
+            box-shadow: 0 8px 22px rgba(11, 104, 56, 0.45);
+            transform: translateY(-1px);
         }
 
-        /* =========================
-           PASSWORD TOGGLE
-        ========================= */
-
-        .password-toggle {
-            position: absolute;
-
-            right: 6px;
-            top: 6px;
-
-            width: 40px;
-            height: 40px;
-
-            border: none;
-            background: transparent;
-
-            color: #66736c;
-
-            cursor: pointer;
-            border-radius: 7px;
+        .sc-btn-primary:active {
+            transform: translateY(0);
         }
 
-        .password-toggle:hover {
-            background: rgba(31, 77, 58, 0.08);
-            color: var(--green);
+        .custom-checkbox:checked {
+            background-color: #0b6638;
+            border-color: #0b6638;
         }
 
-        /* =========================
-           OPTIONS
-        ========================= */
-
-        .login-options {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 12px;
-
-            margin-top: 2px;
-
-            font-size: 0.78rem;
+        .brand-wrap {
+            animation: brandFade 0.8s ease-out both;
         }
 
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-
-            color: rgba(255, 255, 255, 0.8);
+        .login-card-wrap {
+            animation: cardFade 0.8s ease-out 0.12s both;
         }
 
-        .remember input {
-            width: 15px;
-            height: 15px;
-            accent-color: var(--green-light);
-        }
-
-        .forgot {
-            color: #9fcf8b;
-            text-decoration: underline;
-        }
-
-        /* =========================
-           SUBMIT BUTTON
-        ========================= */
-
-        .login-btn {
-            height: 50px;
-
-            margin-top: 5px;
-
-            border: none;
-            border-radius: 30px;
-
-            background: var(--green-light);
-            color: white;
-
-            font-family: inherit;
-            font-size: 0.96rem;
-            font-weight: 700;
-
-            cursor: pointer;
-
-            transition:
-                background 0.2s,
-                transform 0.1s,
-                box-shadow 0.2s;
-        }
-
-        .login-btn:hover {
-            background: #91c17a;
-
-            box-shadow:
-                0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .login-btn:active {
-            transform: translateY(1px);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: progress;
-        }
-
-        /* =========================
-           REQUEST ACCESS
-        ========================= */
-
-        .request-access {
-            text-align: center;
-
-            margin-top: 18px;
-
-            font-size: 0.8rem;
-
-            color: rgba(255, 255, 255, 0.75);
-        }
-
-        .request-access a {
-            color: #9fcf8b;
-            text-decoration: underline;
-        }
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        .footer {
-            width: 100%;
-
-            min-height: 34px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 9px 15px;
-
-            background: var(--green-dark);
-
-            color: rgba(255, 255, 255, 0.9);
-
-            text-align: center;
-
-            font-size: 0.72rem;
-        }
-
-        /* =========================
-           TABLET
-        ========================= */
-
-        @media (max-width: 900px) {
-
-            .page-wrapper {
-                width: min(760px, calc(100% - 24px));
+        @keyframes brandFade {
+            from {
+                opacity: 0;
+                transform: translateY(-16px);
             }
-
-            .login-layout {
-                grid-template-columns: 1fr 0.95fr;
-                min-height: 570px;
-            }
-
-            .field-panel {
-                min-height: 570px;
-            }
-
-            .login-panel {
-                padding: 25px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 700px) {
-
-            body {
-                background: var(--cream);
+        @keyframes cardFade {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
             }
-
-            .topbar {
-                height: auto;
-
-                padding: 12px 16px;
-
-                flex-direction: column;
-                align-items: flex-start;
-
-                gap: 5px;
-            }
-
-            .top-links {
-                font-size: 12px;
-            }
-
-            .page-wrapper {
-                width: calc(100% - 20px);
-
-                margin: 5px auto 12px;
-
-                padding: 6px;
-
-                border-radius: 12px;
-            }
-
-            .login-layout {
-                grid-template-columns: 1fr;
-
-                min-height: auto;
-
-                border-radius: 9px;
-            }
-
-            /* Smaller image section */
-            .field-panel {
-                min-height: 200px;
-
-                background-position: center center;
-            }
-
-            .field-copy {
-                left: 20px;
-                right: 20px;
-                bottom: 20px;
-
-                max-width: none;
-            }
-
-            .field-copy h1 {
-                font-size: 1.8rem;
-                margin-bottom: 5px;
-            }
-
-            .field-copy p {
-                font-size: 0.78rem;
-                line-height: 1.4;
-
-                max-width: 300px;
-            }
-
-            .login-panel {
-                padding: 28px 20px 30px;
-
-                min-height: 470px;
-            }
-
-            .login-card {
-                max-width: 100%;
-            }
-
-            .logo-mark {
-                width: 56px;
-                height: 56px;
-
-                font-size: 26px;
-            }
-
-            .login-title h1 {
-                font-size: 1.55rem;
-            }
-
-            .login-title p {
-                font-size: 0.82rem;
-            }
-
-            .login-options {
-                align-items: flex-start;
-                flex-direction: column;
-
-                gap: 9px;
-            }
-
-            .forgot {
-                align-self: flex-end;
-            }
-
-            .login-btn {
-                height: 51px;
-            }
-
-            .request-access {
-                font-size: 0.76rem;
-            }
-
-            .footer {
-                min-height: 44px;
-
-                font-size: 0.65rem;
-
-                line-height: 1.4;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* =========================
-           SMALL MOBILE
-        ========================= */
-
-        @media (max-width: 420px) {
-
-            .brand-top {
-                font-size: 11px;
-            }
-
-            .top-links {
-                font-size: 11px;
-            }
-
-            .field-panel {
-                min-height: 170px;
-            }
-
-            .field-copy h1 {
-                font-size: 1.55rem;
-            }
-
-            .field-copy p {
-                display: none;
-            }
-
-            .login-panel {
-                padding: 24px 16px 26px;
-            }
-
-            .login-title {
-                margin-bottom: 19px;
-            }
-
-            .login-title h1 {
-                font-size: 1.4rem;
-            }
-
-            .input-group input {
-                height: 50px;
-                font-size: 0.9rem;
-            }
-
-            .login-btn {
-                font-size: 0.92rem;
+        @media (max-width: 640px) {
+            .mobile-card {
+                max-width: calc(100vw - 28px);
             }
         }
-
-        /* =========================
-           ACCESSIBILITY
-        ========================= */
 
         @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
+            .brand-wrap,
+            .login-card-wrap {
                 animation: none !important;
-                transition: none !important;
             }
         }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen w-full flex flex-col relative select-none">
 
-    <!-- TOP HEADER -->
-    <header class="topbar">
+    <!-- =========================================================
+         BACKGROUND
+         ========================================================= -->
 
-        <div class="brand-top">
-            SUGARCANE MANAGEMENT SYSTEM (SMS)
-        </div>
+    <!-- <div class="fixed inset-0 w-full h-full -z-10 overflow-hidden">
 
-        <div class="top-links">
-            <a href="#">Contact Support</a>
-            <span>|</span>
-            <a href="#">Help Center</a>
-        </div>
+        <svg
+            class="w-full h-full"
+            viewBox="0 0 1440 900"
+            preserveAspectRatio="xMidYMid slice"
+            xmlns="http://www.w3.org/2000/svg"
+        >
 
-    </header>
+            <defs>
+
+                <!-- Sky -->
+                <linearGradient
+                    id="skyGrad"
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                >
+                    <stop offset="0%" stop-color="#bce3f7" />
+                    <stop offset="35%" stop-color="#e8f3f8" />
+                    <stop offset="65%" stop-color="#fdf4d7" />
+                    <stop offset="100%" stop-color="#f2dfa7" />
+                </linearGradient>
+
+                <!-- Factory -->
+                <linearGradient
+                    id="factoryGrad"
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                >
+                    <stop offset="0%" stop-color="#a49372" stop-opacity="0.85" />
+                    <stop offset="100%" stop-color="#6e5c3c" stop-opacity="0.95" />
+                </linearGradient>
+
+                <!-- Field -->
+                <linearGradient
+                    id="fieldGrad"
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                >
+                    <stop offset="0%" stop-color="#80a82d" />
+                    <stop offset="40%" stop-color="#4d721d" />
+                    <stop offset="100%" stop-color="#1b3d11" />
+                </linearGradient>
+
+                <!-- Stalk -->
+                <linearGradient
+                    id="stalkGrad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="0%"
+                >
+                    <stop offset="0%" stop-color="#4f7d24" />
+                    <stop offset="50%" stop-color="#8bb942" />
+                    <stop offset="100%" stop-color="#2c5011" />
+                </linearGradient>
+
+                <filter id="softBlur">
+                    <feGaussianBlur stdDeviation="8" />
+                </filter>
+
+                <filter id="largeBlur">
+                    <feGaussianBlur stdDeviation="35" />
+                </filter>
+
+            </defs>
 
 
-    <!-- MAIN LOGIN BOX -->
-    <main class="page-wrapper">
+            <!-- SKY -->
 
-        <div class="login-layout">
+            <rect
+                width="1440"
+                height="900"
+                fill="url(#skyGrad)"
+            />
 
-            <!-- LEFT -->
-            <section class="field-panel">
 
-                <div class="field-copy">
+            <!-- CLOUDS -->
 
-                    <h1>Sugarcane ERP</h1>
+            <path
+                d="M100 120 Q140 80 200 100 Q260 70 320 110 Q380 90 420 130 Z"
+                fill="#ffffff"
+                opacity="0.65"
+                filter="url(#softBlur)"
+            />
 
-                    <p>
-                        Plant operations, cane intake, weighing,
-                        and records in one unified place.
-                    </p>
+            <path
+                d="M850 100 Q900 60 980 80 Q1060 50 1140 90 Q1200 70 1260 110 Z"
+                fill="#ffffff"
+                opacity="0.55"
+                filter="url(#softBlur)"
+            />
+
+
+            <!-- DISTANT HILLS -->
+
+            <path
+                d="M0 520 Q350 480 700 510 T1440 490 L1440 900 L0 900 Z"
+                fill="#7a9e3d"
+                opacity="0.7"
+            />
+
+
+            <!-- DISTANT FACTORY -->
+
+            <g transform="translate(1000, 360)">
+
+                <rect
+                    x="0"
+                    y="80"
+                    width="220"
+                    height="100"
+                    fill="url(#factoryGrad)"
+                    rx="2"
+                />
+
+                <polygon
+                    points="-20,80 110,30 240,80"
+                    fill="#7a6746"
+                    opacity="0.9"
+                />
+
+                <rect
+                    x="140"
+                    y="20"
+                    width="45"
+                    height="160"
+                    rx="4"
+                    fill="url(#factoryGrad)"
+                />
+
+                <ellipse
+                    cx="162"
+                    cy="20"
+                    rx="22.5"
+                    ry="8"
+                    fill="#a49372"
+                />
+
+                <rect
+                    x="195"
+                    y="40"
+                    width="35"
+                    height="140"
+                    rx="3"
+                    fill="url(#factoryGrad)"
+                />
+
+                <rect
+                    x="250"
+                    y="-70"
+                    width="18"
+                    height="250"
+                    fill="#7d6b4b"
+                />
+
+                <rect
+                    x="248"
+                    y="-75"
+                    width="22"
+                    height="8"
+                    fill="#52442c"
+                />
+
+                <path
+                    d="M259 -75 Q275 -120 310 -140 Q350 -160 390 -150"
+                    fill="none"
+                    stroke="#ffffff"
+                    stroke-width="20"
+                    opacity="0.35"
+                    stroke-linecap="round"
+                    filter="url(#softBlur)"
+                />
+
+                <rect
+                    x="20"
+                    y="100"
+                    width="25"
+                    height="35"
+                    fill="#fcebb6"
+                    opacity="0.7"
+                />
+
+                <rect
+                    x="60"
+                    y="100"
+                    width="25"
+                    height="35"
+                    fill="#fcebb6"
+                    opacity="0.7"
+                />
+
+                <rect
+                    x="100"
+                    y="100"
+                    width="25"
+                    height="35"
+                    fill="#fcebb6"
+                    opacity="0.7"
+                />
+
+            </g>
+
+
+            <!-- FIELD -->
+
+            <path
+                d="M0 540 Q400 520 800 550 T1440 520 L1440 900 L0 900 Z"
+                fill="url(#fieldGrad)"
+            />
+
+
+            <!-- LEFT SUGARCANE -->
+
+            <g>
+
+                <path
+                    d="M -30 900 C 40 600 20 250 0 -50"
+                    stroke="url(#stalkGrad)"
+                    stroke-width="38"
+                    fill="none"
+                />
+
+                <line x1="0" y1="720" x2="28" y2="715"
+                      stroke="#a3d154" stroke-width="5" />
+
+                <line x1="8" y1="580" x2="34" y2="575"
+                      stroke="#a3d154" stroke-width="5" />
+
+                <line x1="12" y1="440" x2="36" y2="435"
+                      stroke="#a3d154" stroke-width="5" />
+
+                <line x1="10" y1="300" x2="32" y2="295"
+                      stroke="#a3d154" stroke-width="5" />
+
+
+                <path
+                    d="M 50 900 C 110 580 90 200 60 -50"
+                    stroke="url(#stalkGrad)"
+                    stroke-width="42"
+                    fill="none"
+                />
+
+                <line x1="72" y1="750" x2="108" y2="745"
+                      stroke="#b2e05c" stroke-width="6" />
+
+                <line x1="82" y1="600" x2="116" y2="595"
+                      stroke="#b2e05c" stroke-width="6" />
+
+                <line x1="86" y1="450" x2="118" y2="445"
+                      stroke="#b2e05c" stroke-width="6" />
+
+                <line x1="80" y1="310" x2="110" y2="305"
+                      stroke="#b2e05c" stroke-width="6" />
+
+
+                <path
+                    d="M 130 900 C 180 620 160 280 130 -50"
+                    stroke="url(#stalkGrad)"
+                    stroke-width="32"
+                    fill="none"
+                />
+
+
+                <!-- LEAVES -->
+
+                <path
+                    d="M20 650 Q220 500 360 580 Q200 530 20 650 Z"
+                    fill="#6ba025"
+                />
+
+                <path
+                    d="M30 520 Q280 360 440 450 Q250 400 30 520 Z"
+                    fill="#88c433"
+                />
+
+                <path
+                    d="M80 450 Q320 250 500 380 Q300 320 80 450 Z"
+                    fill="#588b1b"
+                />
+
+                <path
+                    d="M90 320 Q300 120 460 220 Q280 180 90 320 Z"
+                    fill="#91d136"
+                />
+
+                <path
+                    d="M110 220 Q350 30 540 140 Q320 80 110 220 Z"
+                    fill="#71ab27"
+                />
+
+                <path
+                    d="M10 420 Q-120 280 -220 360 Q-90 320 10 420 Z"
+                    fill="#4d7a18"
+                />
+
+                <path
+                    d="M30 280 Q-100 140 -200 220 Q-70 180 30 280 Z"
+                    fill="#6ea326"
+                />
+
+            </g>
+
+
+            <!-- CUT CANE -->
+
+            <g transform="translate(-20,770)">
+
+                <ellipse
+                    cx="220"
+                    cy="110"
+                    rx="220"
+                    ry="25"
+                    fill="#0c1d08"
+                    opacity="0.6"
+                />
+
+                <rect
+                    x="0"
+                    y="60"
+                    width="420"
+                    height="34"
+                    rx="17"
+                    fill="#bfa054"
+                    stroke="#52411a"
+                    stroke-width="3"
+                />
+
+                <ellipse
+                    cx="420"
+                    cy="77"
+                    rx="8"
+                    ry="17"
+                    fill="#e8d897"
+                    stroke="#52411a"
+                    stroke-width="2"
+                />
+
+                <circle
+                    cx="420"
+                    cy="77"
+                    r="4"
+                    fill="#a88c3d"
+                />
+
+                <rect
+                    x="20"
+                    y="32"
+                    width="380"
+                    height="32"
+                    rx="16"
+                    fill="#cca95a"
+                    stroke="#59461d"
+                    stroke-width="3"
+                />
+
+                <ellipse
+                    cx="400"
+                    cy="48"
+                    rx="8"
+                    ry="16"
+                    fill="#f0e3ab"
+                    stroke="#59461d"
+                    stroke-width="2"
+                />
+
+                <rect
+                    x="40"
+                    y="5"
+                    width="340"
+                    height="30"
+                    rx="15"
+                    fill="#d9b662"
+                    stroke="#634f21"
+                    stroke-width="3"
+                />
+
+                <ellipse
+                    cx="380"
+                    cy="20"
+                    rx="7.5"
+                    ry="15"
+                    fill="#f7edbd"
+                    stroke="#634f21"
+                    stroke-width="2"
+                />
+
+                <rect
+                    x="70"
+                    y="-20"
+                    width="290"
+                    height="28"
+                    rx="14"
+                    fill="#e2c16e"
+                    stroke="#6e5725"
+                    stroke-width="3"
+                />
+
+                <ellipse
+                    cx="360"
+                    cy="-6"
+                    rx="7"
+                    ry="14"
+                    fill="#fff5cb"
+                    stroke="#6e5725"
+                    stroke-width="2"
+                />
+
+            </g>
+
+
+            <!-- SUN GLOW -->
+
+            <circle
+                cx="720"
+                cy="450"
+                r="450"
+                fill="#fff3c4"
+                opacity="0.18"
+                filter="url(#largeBlur)"
+            />
+
+        </svg>
+
+    </div> -->
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
+
+    <div class="relative z-10 min-h-screen w-full flex flex-col justify-between px-4 sm:px-6 lg:px-12 py-6 max-w-7xl mx-auto">
+
+        <div class="w-full my-auto py-4">
+
+
+            <!-- =================================================
+                 BRAND LOGO + TITLE
+                 ================================================= -->
+
+            <div class="brand-wrap flex flex-col items-center text-center mb-6 lg:mb-8">
+
+                <div
+                    class="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 mb-2 relative flex items-center justify-center"
+                >
+
+                    <img
+                        src="{{ url_for('static', filename='images/sugarcane-logo.png') }}"
+                        alt="Sugarcane Company"
+                        class="w-full h-full object-contain drop-shadow-md"
+                    >
 
                 </div>
 
-            </section>
+
+                <h1
+                    class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#07381e] tracking-tight leading-none drop-shadow-sm"
+                >
+                    Sugarcane
+                </h1>
 
 
-            <!-- RIGHT -->
-            <section class="login-panel">
+                <p
+                    class="heading-font text-xs sm:text-sm lg:text-base font-extrabold text-[#0b542e] tracking-[0.22em] uppercase mt-1"
+                >
+                    COMPANY MANAGEMENT
+                </p>
 
-                <div class="login-card">
 
-                    <!-- LOGO -->
-                    <div class="logo-area">
+                <p
+                    class="text-xs sm:text-sm font-semibold text-[#14472b] mt-2.5 tracking-wide flex items-center justify-center gap-2"
+                >
+                    <span>Better Management</span>
+                    <span class="text-[#f5a623] font-bold">|</span>
+                    <span>Higher Yields</span>
+                    <span class="text-[#f5a623] font-bold">|</span>
+                    <span>A Stronger Future</span>
+                </p>
 
-                        <div class="logo-mark">
-                            🌱
-                        </div>
+            </div>
 
-                        <h2>GREEN HARVEST</h2>
 
-                        <span>CANE CO.</span>
+            <!-- =================================================
+                 LOGIN CARD
+                 ================================================= -->
+
+            <div class="login-card-wrap w-full max-w-md mx-auto mobile-card">
+
+                <div
+                    class="sc-card rounded-3xl p-6 sm:p-8 relative overflow-hidden transition-all duration-300"
+                >
+
+                    <!-- Decorative Badge -->
+
+                    <div
+                        class="absolute -top-3 -right-3 w-20 h-20 rounded-full bg-[#eaf4ec] flex items-center justify-center  pointer-events-none"
+                    >
+
+                        <img class="img-wrapper"
+                            src="{{ url_for('static', filename='images/sugarcane-logo.png') }}"
+                            alt=""
+                            
+                        >
 
                     </div>
 
 
-                    <!-- TITLE -->
-                    <div class="login-title">
+                    <!-- Card Header -->
 
-                        <h1>MANAGEMENT LOGIN</h1>
+                    <div class="mb-6 pr-10">
 
-                        <p>
-                            Welcome back! Access your Management Dashboard.
+                        <h2
+                            class="heading-font text-2xl sm:text-3xl font-bold text-[#08301a] tracking-tight"
+                        >
+                            Welcome Back
+                        </h2>
+
+                        <p
+                            class="text-xs sm:text-sm text-gray-500 font-medium mt-1 leading-relaxed"
+                        >
+                            Login to your account and manage your sugarcane operations efficiently.
                         </p>
 
                     </div>
 
 
-                    <!-- ERROR -->
+                    <!-- Existing Flask Error -->
+
                     {% if error %}
 
-                        <div class="error-box" role="alert">
-                            {{ error }}
-                        </div>
+                    <div
+                        id="alertBox"
+                        class="mb-4 p-3 rounded-xl text-xs font-semibold bg-red-50 text-red-700 border border-red-200"
+                    >
+                        {{ error }}
+                    </div>
 
                     {% endif %}
 
 
-                    <!-- LOGIN FORM -->
+                    <!-- =================================================
+                         LOGIN FORM
+                         ================================================= -->
+
                     <form
                         method="POST"
+                        action="{{ url_for('login') }}"
                         id="loginForm"
-                        novalidate
+                        class="space-y-4"
                     >
 
                         <!-- USERNAME -->
-                        <div class="input-group">
 
-                            <span class="input-icon">♙</span>
+                        <div>
 
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                placeholder=" "
-                                autocomplete="username"
-                                autocapitalize="none"
-                                spellcheck="false"
-                                required
-                                autofocus
-                            >
+                            <div class="relative flex items-center">
 
-                            <label for="username">
-                                Username
-                            </label>
+                                <span
+                                    class="absolute left-4 text-gray-400 text-sm pointer-events-none"
+                                >
+                                    <i class="fa-solid fa-user"></i>
+                                </span>
+
+
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    required
+                                    autofocus
+                                    autocomplete="username"
+                                    autocapitalize="none"
+                                    spellcheck="false"
+                                    placeholder="Username"
+                                    class="sc-input w-full pl-11 pr-4 py-3 rounded-xl border text-sm text-gray-800 placeholder-gray-400 font-medium outline-none"
+                                >
+
+                            </div>
 
                         </div>
 
 
                         <!-- PASSWORD -->
-                        <div class="input-group">
 
-                            <span class="input-icon">🔒</span>
+                        <div>
 
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                placeholder=" "
-                                autocomplete="current-password"
-                                required
-                            >
+                            <div class="relative flex items-center">
 
-                            <label for="password">
-                                Password
-                            </label>
+                                <span
+                                    class="absolute left-4 text-gray-400 text-sm pointer-events-none"
+                                >
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
 
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                id="passwordToggle"
-                                aria-label="Show password"
-                            >
-                                👁
-                            </button>
+
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    required
+                                    autocomplete="current-password"
+                                    placeholder="Password"
+                                    class="sc-input w-full pl-11 pr-11 py-3 rounded-xl border text-sm text-gray-800 placeholder-gray-400 font-medium outline-none"
+                                >
+
+
+                                <button
+                                    type="button"
+                                    onclick="togglePasswordVisibility()"
+                                    class="absolute right-3.5 text-gray-400 hover:text-gray-600 text-sm  transition-colors focus:outline-none"
+                                    title="Toggle password visibility"
+                                    aria-label="Toggle password visibility"
+                                >
+
+                                    <i
+                                        id="eyeIcon"
+                                        class="fa-solid fa-eye-slash"
+                                    ></i>
+
+                                </button>
+
+                            </div>
 
                         </div>
 
 
                         <!-- OPTIONS -->
-                        <div class="login-options">
 
-                            <label class="remember">
+                        <div class="flex items-center justify-between text-xs pt-1">
+
+                            <label
+                                class="flex items-center gap-2 cursor-pointer text-gray-600 font-medium select-none"
+                            >
+
                                 <input
                                     type="checkbox"
+                                    id="rememberMe"
                                     name="remember"
+                                    class="custom-checkbox w-4 h-4 rounded border-gray-300 text-[#0b6638] focus:ring-0 cursor-pointer"
                                 >
-                                <span>Remember Me</span>
+
+                                <span>
+                                    Remember me
+                                </span>
+
                             </label>
+
 
                             <a
                                 href="#"
-                                class="forgot"
                                 onclick="return false;"
+                                class="text-[#0b6638] hover:text-[#063e21] font-semibold hover:underline transition-colors"
                             >
                                 Forgot Password?
                             </a>
@@ -896,155 +806,164 @@
                         </div>
 
 
-                        <!-- SUBMIT -->
+                        <!-- LOGIN BUTTON -->
+
                         <button
                             type="submit"
-                            class="login-btn"
                             id="loginBtn"
+                            class="sc-btn-primary w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 mt-3 group cursor-pointer"
                         >
-                            <span id="loginBtnText">
-                                LOGIN →
+
+                            <span
+                                id="btnText"
+                                class="flex items-center gap-2"
+                            >
+
+                                <i
+                                    class="fa-solid fa-right-to-bracket text-xs transition-transform group-hover:translate-x-1"
+                                ></i>
+
+                                Login
+
                             </span>
+
+
+                            <svg
+                                id="btnSpinner"
+                                class="hidden animate-spin h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+
+                                <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                ></circle>
+
+                                <path
+                                    class="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+
+                            </svg>
+
                         </button>
 
                     </form>
 
 
-                    <!-- REQUEST ACCESS -->
-                    <div class="request-access">
+                    <!-- SECURITY FOOTER -->
 
-                        New administrator?
+                    <div class="mt-6 pt-3 border-t border-gray-100 text-center">
 
-                        <a href="#" onclick="return false;">
-                            Request Access
-                        </a>
+                        <p
+                            class="text-[11px] font-medium text-gray-400 flex items-center justify-center gap-1.5"
+                        >
+                            <i
+                                class="fa-solid fa-lock text-[10px] text-gray-400"
+                            ></i>
+
+                            Secure • Trusted • For a Greener Tomorrow
+
+                        </p>
 
                     </div>
 
                 </div>
 
-            </section>
+            </div>
 
         </div>
 
-    </main>
+    </div>
 
 
-    <!-- FOOTER -->
-    <footer class="footer">
-
-        © 2024 Green Harvest Cane Co. |
-        Privacy Policy |
-        Terms of Service |
-        Powering Sugar Production Since 1995
-
-    </footer>
-
+    <!-- =========================================================
+         JAVASCRIPT
+         ========================================================= -->
 
     <script>
 
-        (function () {
+        function togglePasswordVisibility() {
 
-            const password =
+            const passwordInput =
                 document.getElementById("password");
 
-            const passwordToggle =
-                document.getElementById("passwordToggle");
+            const eyeIcon =
+                document.getElementById("eyeIcon");
 
-            const form =
-                document.getElementById("loginForm");
+            if (passwordInput.type === "password") {
 
-            const loginBtn =
-                document.getElementById("loginBtn");
+                passwordInput.type = "text";
 
-            const loginBtnText =
-                document.getElementById("loginBtnText");
+                eyeIcon.classList.remove(
+                    "fa-eye-slash"
+                );
+
+                eyeIcon.classList.add(
+                    "fa-eye"
+                );
+
+            } else {
+
+                passwordInput.type = "password";
+
+                eyeIcon.classList.remove(
+                    "fa-eye"
+                );
+
+                eyeIcon.classList.add(
+                    "fa-eye-slash"
+                );
+            }
+        }
 
 
-            /* =========================
-               SHOW / HIDE PASSWORD
-            ========================= */
+        /*
+         * Keep the real Flask login submission.
+         * We only show a spinner while the form is being submitted.
+         */
 
-            passwordToggle.addEventListener("click", function () {
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                function () {
 
-                if (password.type === "password") {
+                    const loginBtn =
+                        document.getElementById(
+                            "loginBtn"
+                        );
 
-                    password.type = "text";
+                    const btnText =
+                        document.getElementById(
+                            "btnText"
+                        );
 
-                    passwordToggle.textContent = "🙈";
-                    passwordToggle.setAttribute(
-                        "aria-label",
-                        "Hide password"
+                    const btnSpinner =
+                        document.getElementById(
+                            "btnSpinner"
+                        );
+
+
+                    loginBtn.disabled = true;
+
+                    btnText.classList.add(
+                        "hidden"
                     );
 
-                } else {
-
-                    password.type = "password";
-
-                    passwordToggle.textContent = "👁";
-                    passwordToggle.setAttribute(
-                        "aria-label",
-                        "Show password"
+                    btnSpinner.classList.remove(
+                        "hidden"
                     );
 
                 }
-
-                password.focus();
-
-            });
-
-
-            /* =========================
-               LOGIN BUTTON LOADING
-            ========================= */
-
-            form.addEventListener("submit", function (event) {
-
-                const username =
-                    document.getElementById("username").value.trim();
-
-                const pass =
-                    password.value;
-
-
-                if (!username || !pass) {
-
-                    event.preventDefault();
-
-                    if (!username) {
-                        document
-                            .getElementById("username")
-                            .focus();
-                    } else {
-                        password.focus();
-                    }
-
-                    return;
-                }
-
-
-                loginBtn.disabled = true;
-
-                loginBtnText.textContent =
-                    "LOGGING IN...";
-
-            });
-
-
-            /* =========================
-               RESTORE BUTTON
-            ========================= */
-
-            window.addEventListener("pageshow", function () {
-
-                loginBtn.disabled = false;
-
-                loginBtnText.textContent =
-                    "LOGIN →";
-
-            });
-
-        })();
+            );
 
     </script>
 

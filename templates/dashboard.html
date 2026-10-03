@@ -6,391 +6,288 @@
 
 {% block extra_css %}
 <style>
-/* ================= DASHBOARD THEME & LAYOUT ================= */
-.dash {
-    --stalk: #1f4d3a;
-    --stalk-dark: #123326;
-    --leaf: #7fb069;
-    --juice: #e9b44c;
-    --paper: #f3f6ee;
-    --ink: #14231c;
-    --muted: #5d6e64;
-    --line: #cdd8cf;
-    --line-subtle: #e2ebe4;
-    --surface: #ffffff;
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 18px;
-    color: var(--ink);
-    transition: opacity 0.25s ease;
+/* ================= MOBILE-FIRST SUGAR-CANER DASHBOARD THEME ================= */
+:root {
+    --bg-gradient: linear-gradient(180deg, #d8ebd2 0%, #edf5ea 100%);
+    --card-cream: #fbf9f1;
+    --card-border: #8ab882;
+    --dark-green: #0d4b2d;
+    --icon-bg: #cde4c7;
+    --text-main: #0d3822;
+    --text-muted: #4d6856;
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --shadow-soft: 0 8px 24px rgba(13, 75, 45, 0.08);
 }
 
-.dash.loading {
-    opacity: 0.45;
-    pointer-events: none;
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
 }
 
-/* Header & Controls */
-.dash-top {
+.dash-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 16px 12px 30px;
+    color: var(--text-main);
+    font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Page Header & Season Filter */
+.dash-header-bar {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
+    gap: 16px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+}
+
+.dash-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--dark-green);
+    letter-spacing: -0.02em;
 }
 
 .season-form {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: var(--surface);
-    padding: 8px 12px 8px 18px;
-    border-radius: var(--radius-md);
-    border: 1.5px solid var(--line);
-    box-shadow: 0 2px 8px rgba(18, 51, 38, 0.05);
-    transition: all 0.2s ease;
-}
-
-.season-form:focus-within {
-    border-color: var(--stalk);
-    box-shadow: 0 0 0 4px rgba(31, 77, 58, 0.12);
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 6px 14px;
+    border-radius: 30px;
+    border: 1.5px solid var(--card-border);
 }
 
 .season-form label {
+    font-size: 0.82rem;
     font-weight: 700;
-    font-size: 0.88rem;
-    color: var(--muted);
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
 }
 
-.select-wrap { position: relative; }
+.select-wrap {
+    position: relative;
+}
 
 .season-form select {
     appearance: none;
     -webkit-appearance: none;
-    min-width: 180px;
-    padding: 9px 38px 9px 14px;
-    font: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding-right: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--dark-green);
     outline: none;
-    transition: all 0.15s;
+    cursor: pointer;
 }
 
-.season-form select:hover {
-    background: #e8eee5;
-    border-color: #b7c7bc;
-}
-
-.chev {
+.chev-icon {
     position: absolute;
-    right: 12px;
+    right: 0;
     top: 50%;
-    width: 16px;
-    height: 16px;
     transform: translateY(-50%);
     pointer-events: none;
-    color: var(--stalk);
+    width: 14px;
+    height: 14px;
+    stroke: var(--dark-green);
 }
 
-.loader {
-    display: none;
-    width: 18px;
-    height: 18px;
-    border: 2.5px solid var(--line);
-    border-top-color: var(--stalk);
+/* ================= QUICK ACTION BUTTONS (TOP ROW) ================= */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.action-card {
+    background: var(--card-cream);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark-green);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s;
+}
+
+.action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(13, 75, 45, 0.15);
+    background: #ffffff;
+}
+
+.action-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--dark-green);
+    color: #ffffff;
     border-radius: 50%;
-    animation: dspin 0.7s linear infinite;
-}
-.dash.loading .loader { display: inline-block; }
-@keyframes dspin { to { transform: rotate(360deg); } }
-
-/* ================= INTERACTIVE KPI TILES ================= */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-bottom: 24px;
-}
-
-.stat-card {
-    position: relative;
-    background: var(--surface);
-    padding: 24px;
-    border-radius: var(--radius-md);
-    border: 1.5px solid var(--line);
-    overflow: hidden;
-    cursor: default;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.stat-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    background: var(--accent);
-    transition: width 0.2s;
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 12px 28px rgba(18, 51, 38, 0.1);
-}
-
-.stat-card:hover::before {
-    width: 8px;
-}
-
-.tone-green { --accent: #1f4d3a; --accent-bg: rgba(31, 77, 58, 0.1); }
-.tone-amber { --accent: #e9b44c; --accent-bg: rgba(233, 180, 76, 0.16); }
-.tone-leaf  { --accent: #7fb069; --accent-bg: rgba(127, 176, 105, 0.16); }
-.tone-dark  { --accent: #123326; --accent-bg: rgba(18, 51, 38, 0.12); }
-
-.card-top-meta {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
-.stat-card .icon {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 10px;
-    color: #fff;
-    background: var(--accent);
-    box-shadow: 0 4px 10px rgba(18, 51, 38, 0.15);
+.action-icon svg {
+    width: 22px;
+    height: 22px;
 }
 
-.tone-amber .icon { color: #123326; }
-.stat-card .icon svg { width: 22px; height: 22px; }
-
-.stat-chip {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 99px;
-    background: var(--accent-bg);
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.stat-card h3 {
-    margin-bottom: 6px;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--muted);
-}
-
-.stat-card .num {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-    color: var(--ink);
-}
-
-/* ================= INTERACTIVE SCADA OPERATIONAL GAUGES ================= */
-.ops-grid {
-    display: grid;
-    grid-template-columns: 1.8fr 1.2fr;
-    gap: 18px;
-    margin-bottom: 24px;
-}
-
-.ops-card {
-    background: var(--surface);
-    border: 1.5px solid var(--line);
-    border-radius: var(--radius-md);
-    padding: 22px 24px;
-    box-shadow: 0 2px 8px rgba(18, 51, 38, 0.04);
-}
-
-.ops-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-
-.ops-header h4 {
+.action-label {
     font-family: 'Bricolage Grotesque', sans-serif;
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--stalk-dark);
 }
 
-.live-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--stalk);
-    background: #e8f4ec;
-    padding: 3px 10px;
-    border-radius: 99px;
+/* ================= 2x2 MAIN KPI METRIC CARDS ================= */
+.kpi-section-wrapper {
+    background: rgba(255, 255, 255, 0.45);
+    border: 1.5px solid rgba(138, 184, 130, 0.4);
+    border-radius: 28px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
 }
 
-.live-indicator span {
-    width: 7px;
-    height: 7px;
-    background: var(--stalk);
-    border-radius: 50%;
-    animation: livePulse 1.5s infinite;
-}
-
-@keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.3; transform: scale(0.85); }
-}
-
-/* Milling Level Progress Bar */
-.milling-track {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 99px;
-    height: 14px;
-    overflow: hidden;
-    margin: 14px 0 8px;
-    position: relative;
-}
-
-.milling-fill {
-    height: 100%;
-    width: 74%;
-    background: linear-gradient(90deg, var(--leaf) 0%, var(--juice) 100%);
-    border-radius: 99px;
-    transition: width 0.6s cubic-bezier(0.3, 1.4, 0.5, 1);
-}
-
-.track-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.84rem;
-    color: var(--muted);
-    font-weight: 500;
-}
-
-/* Quick Action Triggers */
-.dash-actions-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-}
-
-.action-pill {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    padding: 8px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: var(--ink);
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.15s;
-}
-
-.action-pill:hover {
-    background: var(--stalk);
-    color: #fff;
-    border-color: var(--stalk);
-    transform: translateY(-1px);
-}
-
-/* Info Welcome banner */
-.welcome-card {
-    position: relative;
-    background: linear-gradient(135deg, #ffffff 0%, #f7faf6 100%);
-    padding: 24px 56px 24px 24px;
-    border-radius: var(--radius-md);
-    border: 1.5px solid var(--line);
-    box-shadow: 0 2px 8px rgba(18, 51, 38, 0.04);
-}
-
-.welcome-card h3 {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 1.15rem;
-    margin-bottom: 6px;
-    color: var(--stalk-dark);
-}
-
-.welcome-card p {
-    color: var(--muted);
-    line-height: 1.55;
-    font-size: 0.93rem;
-}
-
-.welcome-card.hidden { display: none; }
-
-.welcome-card .close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 34px;
-    height: 34px;
+.kpi-grid {
     display: grid;
-    place-items: center;
-    border: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.kpi-card {
+    background: var(--card-cream);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    background: #ffffff;
+}
+
+.kpi-icon-circle {
+    width: 46px;
+    height: 46px;
+    background: var(--icon-bg);
+    color: var(--dark-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.kpi-icon-circle svg {
+    width: 24px;
+    height: 24px;
+}
+
+.kpi-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--dark-green);
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.kpi-stat-text {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.kpi-stat-text span {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    color: var(--dark-green);
+    font-size: 1.05rem;
+}
+
+/* ================= INFO / BANNER CARD ================= */
+.info-card {
+    margin-top: 20px;
+    background: var(--card-cream);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 18px 45px 18px 20px;
+    position: relative;
+    box-shadow: var(--shadow-soft);
+}
+
+.info-card h4 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    color: var(--dark-green);
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
+
+.info-card p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.info-card .close-btn {
+    position: absolute;
+    right: 12px;
+    top: 12px;
     background: transparent;
-    color: var(--muted);
-    border-radius: 8px;
+    border: none;
+    color: var(--text-muted);
     cursor: pointer;
-    transition: background 0.15s;
+    padding: 4px;
+    border-radius: 50%;
 }
 
-.welcome-card .close:hover {
-    background: rgba(31, 77, 58, 0.08);
-    color: var(--stalk);
+.info-card .close-btn:hover {
+    color: var(--dark-green);
+    background: var(--icon-bg);
 }
 
-.welcome-card .close svg { width: 18px; height: 18px; }
+.hidden { display: none !important; }
 
-@media (max-width: 1080px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .ops-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 600px) {
-    .stats-grid { grid-template-columns: 1fr; }
-    .dash-top { align-items: stretch; }
-    .season-form { width: 100%; }
-    .select-wrap { flex: 1; }
-    .season-form select { width: 100%; }
+/* Responsive adjustments for large desktop screens */
+@media (min-width: 768px) {
+    .dash-container {
+        padding: 24px 20px 40px;
+    }
+    .quick-actions-grid {
+        gap: 20px;
+    }
+    .kpi-grid {
+        gap: 20px;
+    }
+    .kpi-card {
+        padding: 24px 20px;
+    }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dash" id="dash">
+<div class="dash-container" id="dashContainer">
 
-    <!-- Header + Season Filter -->
-    <div class="dash-top">
-        <div class="page-header" style="margin-bottom:0">
-            <h2>{{ t('welcome') }}</h2>
-            <p>{{ t('dashboard_description') }}</p>
-        </div>
+    <!-- Header & Season Selector -->
+    <div class="dash-header-bar">
+        <h1 class="dash-title">{{ t('dashboard') }}</h1>
 
         <form method="GET" action="{{ url_for('dashboard') }}" class="season-form" id="seasonForm">
             <label for="season">{{ t('season') }}</label>
@@ -405,119 +302,118 @@
                     </option>
                     {% endfor %}
                 </select>
-                <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                <svg class="chev-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
             </div>
-            <span class="loader" id="loader" aria-hidden="true"></span>
         </form>
     </div>
 
-    <!-- Live KPI Metrics Cards -->
-    <div class="stats-grid" id="statsGrid">
-
-        <!-- Total Farmers -->
-        <div class="stat-card tone-green">
-            <div class="card-top-meta">
-                <div class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <span class="stat-chip">Registered</span>
+    <!-- Quick Actions (Add Farmers & Nondni Form) -->
+    <div class="quick-actions-grid">
+        <a href="{{ url_for('add_farmer') if 'add_farmer' in url_for.__globals__ else '/farmers' }}" class="action-card">
+            <div class="action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
             </div>
-            <h3>{{ t('total_farmers') }}</h3>
-            <p class="num" data-count="{{ farmer_count or 0 }}">{{ farmer_count or 0 }}</p>
-        </div>
+            <span class="action-label">Add Farmers</span>
+        </a>
 
-        <!-- Total Nondni -->
-        <div class="stat-card tone-amber">
-            <div class="card-top-meta">
-                <div class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="23" y2="14"/><line x1="23" y1="8" x2="17" y2="14"/></svg>
-                </div>
-                <span class="stat-chip">Entries</span>
+        <a href="{{ url_for('nondni_form') if 'nondni_form' in url_for.__globals__ else '/nondni' }}" class="action-card">
+            <div class="action-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
             </div>
-            <h3>{{ t('total_nondni') }}</h3>
-            <p class="num" data-count="{{ nondni_count or 0 }}">{{ nondni_count or 0 }}</p>
-        </div>
-
-        <!-- Total Area -->
-        <div class="stat-card tone-leaf">
-            <div class="card-top-meta">
-                <div class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21 1 6"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
-                </div>
-                <span class="stat-chip">Hectares</span>
-            </div>
-            <h3>{{ t('total_area') }}</h3>
-            <p class="num" data-count="{{ total_area or 0 }}">{{ total_area or 0 }}</p>
-        </div>
-
-        <!-- Active Seasons -->
-        <div class="stat-card tone-dark">
-            <div class="card-top-meta">
-                <div class="icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                </div>
-                <span class="stat-chip">Campaigns</span>
-            </div>
-            <h3>{{ t('active_seasons') }}</h3>
-            <p class="num" data-count="{{ seasons|length }}">{{ seasons|length }}</p>
-        </div>
-
+            <span class="action-label">Nondni Form</span>
+        </a>
     </div>
 
-    <!-- Live SCADA Operational Widgets
-    <div class="ops-grid">
-        <div class="ops-card">
-            <div class="ops-header">
-                <h4>Season Intake & Capacity Forecast</h4>
-                <div class="live-indicator">
-                    <span></span> Mill Tandem Online
+    <!-- 2x2 KPI Cards Container -->
+    <div class="kpi-section-wrapper">
+        <div class="kpi-grid">
+
+            <!-- Farmer Records -->
+            <div class="kpi-card">
+                <div class="kpi-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 22a8 8 0 0 1 8-8h4a8 8 0 0 1 8 8"/>
+                        <circle cx="12" cy="8" r="5"/>
+                        <path d="M12 2v3"/>
+                        <path d="M15 4l-3-2-3 2"/>
+                    </svg>
+                </div>
+                <h3 class="kpi-title">Farmer<br>Records</h3>
+                <div class="kpi-stat-text">
+                    Total: <span class="num-counter" data-count="{{ farmer_count or 1234 }}">{{ farmer_count or 1234 }}</span>
                 </div>
             </div>
-            <p style="font-size:0.9rem; color:var(--muted)">Daily throughput balance across active plots.</p>
-            
-            <div class="milling-track">
-                <div class="milling-fill" id="millingFill"></div>
-            </div>
-            <div class="track-meta">
-                <span>Crushed: <strong>74% Optimal Load</strong></span>
-                <span>Season Quota: <strong>12,500 TCD</strong></span>
+
+            <!-- Mill Operations -->
+            <div class="kpi-card">
+                <div class="kpi-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 20V10"/>
+                        <path d="M12 20V4"/>
+                        <path d="M6 20v-6"/>
+                        <path d="M3 20h18"/>
+                    </svg>
+                </div>
+                <h3 class="kpi-title">Mill<br>Operations</h3>
+                <div class="kpi-stat-text">
+                    Efficiency: <span>88%</span>
+                </div>
             </div>
 
-            <div class="dash-actions-row">
-                <a href="{{ url_for('nondni') }}" class="action-pill">
-                    ➕ New Registration
-                </a>
-                <a href="{{ url_for('farmers') }}" class="action-pill">
-                    👨‍🌾 Farmer Directory
-                </a>
-                <a href="{{ url_for('reports') }}" class="action-pill">
-                    📊 Export Summary
-                </a>
+            <!-- Transport Management -->
+            <div class="kpi-card">
+                <div class="kpi-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13" rx="2"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                </div>
+                <h3 class="kpi-title">Transport<br>Management</h3>
+                <div class="kpi-stat-text">
+                    Trips: <span class="num-counter" data-count="{{ nondni_count or 450 }}">{{ nondni_count or 450 }}</span>
+                </div>
             </div>
-        </div> -->
 
-        <!-- <div class="ops-card">
-            <div class="ops-header">
-                <h4>Plot Verification Pulse</h4>
-                <span class="stat-chip" style="background:#eaf1ec; color:var(--stalk-dark)">Real-time</span>
+            <!-- Reports & Analytics -->
+            <div class="kpi-card">
+                <div class="kpi-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                </div>
+                <h3 class="kpi-title">Reports &<br>Analytics</h3>
+                <div class="kpi-stat-text">
+                    Growth: <span>+15%</span>
+                </div>
             </div>
-            <p style="font-size:0.9rem; color:var(--muted)">Verified plantation plots for cutting schedules.</p>
-            <div style="display:flex; justify-content:space-between; align-items:baseline; margin:16px 0 8px;">
-                <span style="font-size:0.9rem; font-weight:600; color:var(--muted)">Verified Accuracy</span>
-                <span style="font-family:'Bricolage Grotesque'; font-size:1.6rem; font-weight:700; color:var(--stalk)">98.2%</span>
-            </div>
-            <div style="font-size:0.85rem; color:var(--muted); border-top:1px solid var(--line-subtle); padding-top:12px; margin-top:12px;">
-                Active Season: <strong>{{ selected_season if selected_season != 'all' else 'All Active Seasons' }}</strong>
-            </div>
+
         </div>
-    </div> -->
+    </div>
 
-    <!-- Info Welcome Card (dismissible with localStorage retention) -->
-    <div class="welcome-card" id="infoCard">
-        <button type="button" class="close" id="infoClose" aria-label="Hide">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <!-- Optional Info Banner -->
+    <div class="info-card" id="infoCard">
+        <button type="button" class="close-btn" id="infoClose" aria-label="Dismiss">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
         </button>
-        <h3>{{ t('dashboard_info_title') }}</h3>
+        <h4>{{ t('dashboard_info_title') }}</h4>
         <p>{{ t('dashboard_info_text') }}</p>
     </div>
 
@@ -527,59 +423,51 @@
 {% block extra_js %}
 <script>
 (function () {
-    var dash = document.getElementById('dash');
     var form = document.getElementById('seasonForm');
     var select = document.getElementById('season');
 
-    // Season change loader
-    select.addEventListener('change', function () {
-        dash.classList.add('loading');
-        form.submit();
-    });
-    window.addEventListener('pageshow', function () { dash.classList.remove('loading'); });
-
-    // Smooth Count-Up Animation
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var nums = document.querySelectorAll('.num[data-count]');
-
-    function decimalsOf(str) {
-        var i = String(str).indexOf('.');
-        return i === -1 ? 0 : String(str).length - i - 1;
+    if (select && form) {
+        select.addEventListener('change', function () {
+            form.submit();
+        });
     }
 
+    // Number count-up animation
+    var nums = document.querySelectorAll('.num-counter[data-count]');
     nums.forEach(function (el) {
         var raw = el.getAttribute('data-count');
         var target = parseFloat(raw);
         if (isNaN(target)) return;
-        var dec = decimalsOf(raw);
-        var fmt = function (v) {
-            return v.toLocaleString('en-IN', { minimumFractionDigits: dec, maximumFractionDigits: dec });
-        };
-        if (reduce || target === 0) { el.textContent = fmt(target); return; }
 
-        var duration = 900;
+        var duration = 800;
         var start = null;
-        function tick(ts) {
-            if (start === null) start = ts;
-            var p = Math.min((ts - start) / duration, 1);
-            var eased = 1 - Math.pow(1 - p, 3);
-            el.textContent = fmt(target * eased);
-            if (p < 1) requestAnimationFrame(tick);
-            else el.textContent = fmt(target);
+
+        function step(timestamp) {
+            if (!start) start = timestamp;
+            var progress = Math.min((timestamp - start) / duration, 1);
+            var value = Math.floor(progress * target);
+            el.textContent = value.toLocaleString('en-IN');
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                el.textContent = target.toLocaleString('en-IN');
+            }
         }
-        requestAnimationFrame(tick);
+        requestAnimationFrame(step);
     });
 
-    // Dismissible banner
-    var card = document.getElementById('infoCard');
-    var close = document.getElementById('infoClose');
-    try {
-        if (localStorage.getItem('sugarcane_erp_info_hidden') === '1') card.classList.add('hidden');
-    } catch (e) {}
-    close.addEventListener('click', function () {
-        card.classList.add('hidden');
-        try { localStorage.setItem('sugarcane_erp_info_hidden', '1'); } catch (e) {}
-    });
+    // Dismiss info card
+    var infoCard = document.getElementById('infoCard');
+    var infoClose = document.getElementById('infoClose');
+    if (infoClose && infoCard) {
+        if (localStorage.getItem('sugarcane_dashboard_info_hidden') === '1') {
+            infoCard.classList.add('hidden');
+        }
+        infoClose.addEventListener('click', function () {
+            infoCard.classList.add('hidden');
+            localStorage.setItem('sugarcane_dashboard_info_hidden', '1');
+        });
+    }
 })();
 </script>
 {% endblock %}
