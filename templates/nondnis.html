@@ -9,20 +9,21 @@
 {% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
+/* ============ Theme variables ============ */
 .nd {
     --stalk: #1f4d3a;
     --stalk-dark: #123326;
-    --leaf: #7fb069;
     --juice: #e9b44c;
     --paper: #f3f6ee;
     --ink: #14231c;
     --muted: #5d6e64;
     --line: #cdd8cf;
-    --line-subtle: #e5ece6;
     color: var(--ink);
 }
 
+/* ============ Filter bar ============ */
 .filter-card {
     background: var(--surface);
     padding: 18px 22px;
@@ -31,34 +32,17 @@
     box-shadow: var(--shadow-sm);
     margin-bottom: 22px;
 }
-
 .filter-card form {
     display: flex;
     align-items: flex-end;
     gap: 14px;
     flex-wrap: wrap;
 }
+.filter-group { display: flex; flex-direction: column; gap: 6px; }
+.filter-group.grow { flex: 1; min-width: 240px; }
+.filter-group label { font-weight: 600; font-size: 0.88rem; color: var(--muted); }
 
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.filter-group.grow {
-    flex: 1;
-    min-width: 240px;
-}
-
-.filter-group label {
-    font-weight: 600;
-    font-size: 0.88rem;
-    color: var(--muted);
-}
-
-.select-wrap, .search-wrap {
-    position: relative;
-}
+.select-wrap, .search-wrap { position: relative; }
 
 .nd select,
 .nd .search-wrap input {
@@ -70,9 +54,8 @@
     border: 1.5px solid var(--line);
     border-radius: var(--radius-sm);
     outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: border-color .15s, box-shadow .15s;
 }
-
 .nd select {
     appearance: none;
     -webkit-appearance: none;
@@ -80,178 +63,222 @@
     padding: 0 36px 0 14px;
     cursor: pointer;
 }
-
-.nd .search-wrap input {
-    padding: 0 40px 0 40px;
-    font-size: 0.95rem;
-}
-
+.nd .search-wrap input { padding: 0 40px; font-size: .95rem; }
 .nd select:hover,
-.nd .search-wrap input:hover {
-    border-color: #a9bbae;
-}
-
+.nd .search-wrap input:hover { border-color: #a9bbae; }
 .nd select:focus,
 .nd .search-wrap input:focus {
     border-color: var(--stalk);
-    box-shadow: 0 0 0 4px rgba(31, 77, 58, 0.12);
+    box-shadow: 0 0 0 4px rgba(31, 77, 58, .12);
 }
 
-.chev {
+.chev, .mag {
     position: absolute;
-    right: 12px;
     top: 50%;
-    width: 16px;
-    height: 16px;
     transform: translateY(-50%);
-    color: var(--stalk);
     pointer-events: none;
 }
-
-.mag {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    width: 18px;
-    height: 18px;
-    transform: translateY(-50%);
-    color: var(--muted);
-    pointer-events: none;
-}
+.chev { right: 12px; width: 16px; height: 16px; color: var(--stalk); }
+.mag  { left: 14px;  width: 18px; height: 18px; color: var(--muted); }
 
 .clear {
     position: absolute;
-    right: 6px;
-    top: 6px;
-    width: 32px;
-    height: 32px;
-    display: grid;
-    place-items: center;
-    border: none;
-    background: transparent;
+    right: 6px; top: 6px;
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    border: none; background: transparent;
     color: var(--muted);
     border-radius: 6px;
     cursor: pointer;
 }
-
 .clear[hidden] { display: none; }
-.clear:hover { background: rgba(31, 77, 58, 0.08); color: var(--stalk); }
+.clear:hover { background: rgba(31, 77, 58, .08); color: var(--stalk); }
 .clear svg { width: 16px; height: 16px; }
 
+/* ============ Records header / empty ============ */
 .table-meta {
     padding: 12px 18px;
-    border-bottom: 1.5px solid var(--line);
-    font-size: 0.88rem;
+    margin-bottom: 16px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: .88rem;
     color: var(--muted);
     background: var(--paper);
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+.table-meta strong { color: var(--stalk-dark); }
 
-.table-meta strong {
-    color: var(--stalk-dark);
-}
-
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    max-height: 70vh;
-}
-
-.nd table {
-    width: 100%;
-    min-width: 1400px;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-.nd th,
-.nd td {
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--line-subtle);
-    text-align: left;
-    white-space: nowrap;
-}
-
-.nd th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: var(--stalk);
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.88rem;
-    user-select: none;
-    letter-spacing: 0.02em;
-}
-
-.nd th[data-sort] { cursor: pointer; }
-.nd th[data-sort]:hover { background: var(--stalk-dark); }
-.nd th[data-sort]::after {
-    content: "";
-    display: inline-block;
-    margin-left: 6px;
-    border: 4px solid transparent;
-    opacity: 0;
-    vertical-align: middle;
-}
-.nd th.asc::after  { border-bottom-color: var(--juice); border-top-width: 0; opacity: 1; }
-.nd th.desc::after { border-top-color: var(--juice); border-bottom-width: 0; opacity: 1; }
-
-.nd tbody tr:hover td { background: #f7faf5; }
-.nd td.name { font-weight: 600; color: var(--stalk-dark); }
-
-.nd .sticky-col {
-    position: sticky;
-    right: 0;
-    box-shadow: -6px 0 8px -6px rgba(18, 51, 38, 0.15);
-}
-
-.nd td.sticky-col { background: var(--surface); }
-.nd tbody tr:hover td.sticky-col { background: #f7faf5; }
-.nd th.sticky-col { z-index: 3; background: var(--stalk-dark); }
-
-.edit-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #edf3ea;
-    color: var(--stalk-dark);
-    font-weight: 600;
-    font-size: 0.85rem;
-    border: 1px solid var(--line);
-    text-decoration: none;
-    border-radius: var(--radius-sm);
-    transition: all 0.15s;
-}
-
-.edit-btn svg { width: 14px; height: 14px; }
-.edit-btn:hover {
-    background: var(--stalk);
-    color: #fff;
-    border-color: var(--stalk);
-}
-
-.nd mark {
-    background: rgba(233, 180, 76, 0.45);
-    color: inherit;
-    padding: 1px 3px;
-    border-radius: 3px;
-}
-
-.empty-message {
-    padding: 40px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.95rem;
-}
+.empty-message { padding: 40px; text-align: center; color: var(--muted); font-size: .95rem; }
 .empty-message[hidden] { display: none; }
+
+/* ============ Cards grid ============ */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+    font-family: 'Noto Sans Devanagari', system-ui, sans-serif;
+}
+
+.n-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid transparent;
+    border-radius: 24px;
+    background:
+        linear-gradient(#fff, #fbfaf7) padding-box,
+        linear-gradient(135deg, #e9b88e, #b87333 40%, #e9b88e 70%, #9a5b2b) border-box;
+    box-shadow: 0 8px 22px rgba(90, 55, 25, .18);
+    overflow: hidden;
+    transition: transform .18s, box-shadow .18s;
+}
+.n-card[hidden] { display: none; }
+.n-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(90, 55, 25, .25); }
+
+/* Header */
+.n-head {
+    padding: 14px 18px;
+    font-size: 19px;
+    font-weight: 500;
+    color: #b0693a;
+    border-bottom: 2px solid #c58a5a;
+}
+
+/* Green banner */
+.n-banner {
+    position: relative;
+    height: 112px;
+    background:
+        repeating-radial-gradient(circle at 82% 50%, rgba(255,255,255,.07) 0 2px, transparent 2px 6px),
+        linear-gradient(135deg, #1b4a27 0%, #2c7a3f 55%, #1d5a2c 100%);
+    color: #fff;
+}
+.n-badge {
+    position: absolute; top: 14px; left: 14px;
+    padding: 3px 16px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, #e3a370, #b8683a);
+    box-shadow: 0 2px 5px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.4);
+    font-size: 17px; font-weight: 700; color: #4a2a12;
+}
+.n-season {
+    position: absolute; left: 16px; bottom: 10px;
+    font-size: 20px; font-weight: 700; letter-spacing: .3px;
+}
+.n-seal {
+    position: absolute; right: 12px; top: 50%;
+    width: 92px; height: 92px; margin-top: -46px;
+    color: #fff;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.35));
+}
+
+/* Body */
+.n-body { position: relative; padding: 14px 18px 16px; flex: 1; display: flex; flex-direction: column; }
+.n-wm {
+    position: absolute; left: 50%; top: 44%;
+    width: 210px; height: 210px; margin: -105px 0 0 -105px;
+    color: #b87333; opacity: .08; pointer-events: none;
+}
+.n-name { position: relative; margin: 0; font-size: 22px; font-weight: 800; color: #111; line-height: 1.25; }
+.n-code { position: relative; font-size: 12px; color: #6b5b4a; margin: 2px 0 4px; }
+
+.n-row {
+    position: relative;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,.18);
+    font-size: 14px; color: #1f2937;
+}
+.n-row > span:first-child { flex: 1; }
+.n-row > span:last-child  { text-align: right; font-weight: 500; word-break: break-word; }
+.n-row:last-of-type { border-bottom: none; }
+.n-row .map-ico { width: 22px; height: 22px; color: #8a8a8a; }
+.n-row a:hover .map-ico { color: #2c7a3f; }
+
+/* Buttons */
+.n-actions { position: relative; display: grid; grid-template-columns: 1.45fr 1fr; gap: 10px; margin-top: auto; padding-top: 12px; }
+.n-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+}
+.n-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+.n-btn.edit {
+    background: linear-gradient(180deg, #4f9060, #3a7248);
+    color: #fff;
+    box-shadow: 0 3px 7px rgba(40, 90, 55, .35);
+}
+.n-btn.view {
+    border: 2px solid #c58a5a;
+    color: #b0693a;
+    background: rgba(255,255,255,.7);
+}
+
+/* Highlight */
+.nd mark { background: rgba(233,180,76,.45); color: inherit; padding: 1px 3px; border-radius: 3px; }
+
+/* ============ Mobile: 2 cards per row ============ */
+@media (max-width: 640px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .n-card { border-radius: 16px; }
+    .n-head { padding: 9px 10px; font-size: 12px; }
+    .n-banner { height: 76px; }
+    .n-badge { top: 8px; left: 8px; padding: 1px 10px; font-size: 12px; }
+    .n-season { left: 10px; bottom: 6px; font-size: 13px; }
+    .n-seal { width: 56px; height: 56px; margin-top: -28px; right: 6px; }
+    .n-body { padding: 9px 10px 10px; }
+    .n-name { font-size: 14px; }
+    .n-code { font-size: 10px; }
+    .n-row { font-size: 10.5px; padding: 4px 0; gap: 6px; }
+    .n-row .map-ico { width: 16px; height: 16px; }
+    .n-actions { grid-template-columns: 1fr; gap: 6px; padding-top: 8px; }
+    .n-btn { font-size: 12px; padding: 7px 4px; border-radius: 9px; }
+    .n-btn svg { width: 13px; height: 13px; }
+    .n-wm { width: 130px; height: 130px; margin: -65px 0 0 -65px; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Seal emblem (defined once, reused in every card) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="holo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0"   stop-color="#9fd8e8"/>
+      <stop offset=".3"  stop-color="#d8b5e8"/>
+      <stop offset=".55" stop-color="#f4e3b5"/>
+      <stop offset=".8"  stop-color="#a9e0c0"/>
+      <stop offset="1"   stop-color="#9fc3ee"/>
+    </linearGradient>
+    <symbol id="seal" viewBox="0 0 100 100">
+      <g fill="none" stroke="currentColor" stroke-width=".6" opacity=".55">
+        <circle cx="50" cy="50" r="48"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(22.5 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(45 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(67.5 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(90 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(112.5 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(135 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="17" transform="rotate(157.5 50 50)"/>
+      </g>
+      <circle cx="50" cy="50" r="31" fill="url(#holo)" opacity=".85" stroke="currentColor" stroke-width="1" stroke-opacity=".6"/>
+      <g fill="currentColor" fill-opacity=".6" stroke="currentColor" stroke-opacity=".8" stroke-width=".6">
+        <path d="M50 50 C46 40 47 32 50 24 C53 32 54 40 50 50Z"/>
+        <path d="M50 54 C42 48 36 42 32 32 C42 36 48 44 50 54Z"/>
+        <path d="M50 54 C58 48 64 42 68 32 C58 36 52 44 50 54Z"/>
+        <path d="M50 62 C40 58 32 54 27 46 C38 48 46 54 50 62Z"/>
+        <path d="M50 62 C60 58 68 54 73 46 C62 48 54 54 50 62Z"/>
+        <path d="M50 50 V74" fill="none" stroke-width="1.4"/>
+        <path d="M38 74 H62" fill="none" stroke-width="1"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
 <div class="nd" id="nd">
     <div class="page-header">
         <h2>📋 {{ t('nondni_records') }}</h2>
@@ -293,138 +320,126 @@
         </form>
     </div>
 
-    <!-- Records Table -->
-    <div class="table-card">
-        {% if nondnis %}
-        <div class="table-meta">
-            <span>{{ t('nondni_records') }}</span>
-            <span class="count"><strong id="shownCount">{{ nondnis|length }}</strong> / {{ nondnis|length }}</span>
-        </div>
-
-        <div class="table-wrapper">
-            <table id="recTable">
-                <thead>
-                    <tr>
-                        <th data-sort>ID</th>
-                        <th data-sort>{{ t('farmer_code') }}</th>
-                        <th data-sort>{{ t('farmer_name') }}</th>
-                        <th data-sort>{{ t('village') }}</th>
-                        <th data-sort>{{ t('season') }}</th>
-                        <th data-sort>{{ t('survey_gat_no') }}</th>
-                        <th data-sort>{{ t('planting_date') }}</th>
-                        <th data-sort>{{ t('sugarcane_variety') }}</th>
-                        <th data-sort>{{ t('crop_type') }}</th>
-                        <th data-sort>{{ t('irrigation_method') }}</th>
-                        <th data-sort>{{ t('planting_area') }}</th>
-                        <th data-sort>{{ t('receipt_no') }}</th>
-                        <th class="sticky-col">{{ t('action') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in nondnis %}
-                    <tr>
-                        <td>{{ record.id }}</td>
-                        <td><code>{{ record.farmer_code }}</code></td>
-                        <td class="name">{{ record.farmer_name }}</td>
-                        <td>{{ record.village }}</td>
-                        <td>{{ record.season }}</td>
-                        <td>{{ record.survey_gat_no or '-' }}</td>
-                        <td>{{ record.planting_date or '-' }}</td>
-                        <td>{{ record.sugarcane_variety or '-' }}</td>
-                        <td>{{ record.crop_type or '-' }}</td>
-                        <td>{{ record.irrigation_method or '-' }}</td>
-                        <td>{{ record.planting_area or '-' }}</td>
-                        <td>{{ record.receipt_no or '-' }}</td>
-                        <td class="sticky-col">
-                            <a href="{{ url_for('edit_nondni', nondni_id=record.id) }}" class="edit-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                                {{ t('edit') }}
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="empty-message" id="noMatch" hidden>
-            {{ t('no_nondni_records') }}
-        </div>
-        {% else %}
-        <div class="empty-message">
-            {{ t('no_nondni_records') }}
-        </div>
-        {% endif %}
+    <!-- Records Cards -->
+    {% if nondnis %}
+    <div class="table-meta">
+        <span>{{ t('nondni_records') }}</span>
+        <span class="count"><strong id="shownCount">{{ nondnis|length }}</strong> / {{ nondnis|length }}</span>
     </div>
+
+    <div class="cards-grid" id="cardsGrid">
+        {% for record in nondnis %}
+        <div class="n-card"
+             data-search="{{ [record.id, record.farmer_code, record.farmer_name, record.village, record.season, record.survey_gat_no, record.planting_date, record.sugarcane_variety, record.crop_type, record.irrigation_method, record.planting_area, record.receipt_no]|select|join(' ')|lower }}">
+
+            <div class="n-head">{{ t('nondni_records') }}</div>
+
+            <div class="n-banner">
+                <span class="n-badge">#{{ record.id }}</span>
+                <span class="n-season">{{ record.season }}</span>
+                <svg class="n-seal" aria-hidden="true"><use href="#seal"/></svg>
+            </div>
+
+            <div class="n-body">
+                <svg class="n-wm" aria-hidden="true"><use href="#seal"/></svg>
+
+                <h3 class="n-name">{{ record.farmer_name }}</h3>
+                <div class="n-code">{{ record.farmer_code }}</div>
+
+                <div class="n-row"><span>{{ t('village') }}:</span><span>{{ record.village }}</span></div>
+                <div class="n-row"><span>{{ t('survey_gat_no') }}:</span><span>{{ record.survey_gat_no or '-' }}</span></div>
+                <div class="n-row"><span>{{ t('planting_date') }}:</span><span>{{ record.planting_date or '-' }}</span></div>
+                <div class="n-row"><span>{{ t('sugarcane_variety') }}:</span><span>{{ record.sugarcane_variety or '-' }}</span></div>
+                <div class="n-row"><span>{{ t('crop_type') }}:</span><span>{{ record.crop_type or '-' }}</span></div>
+                <div class="n-row"><span>{{ t('irrigation_method') }}:</span><span>{{ record.irrigation_method or '-' }}</span></div>
+                <div class="n-row"><span>{{ t('planting_area') }}:</span><span>{{ record.planting_area or '-' }}</span></div>
+
+                <div class="n-row">
+                    <span>{{ t('field_location') }}:</span>
+                    <span>
+                        {% if record.location_link %}<a href="{{ record.location_link }}" target="_blank" rel="noopener">{% endif %}
+                        <svg class="map-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/><circle cx="12" cy="10" r="1.6"/></svg>
+                        {% if record.location_link %}</a>{% endif %}
+                    </span>
+                </div>
+
+                <div class="n-row">
+                    <span>{{ t('contact_no') }}:</span>
+                    <span>{% if record.mobile_no %}{{ '*' * (record.mobile_no|string|length) }}{% else %}-{% endif %}</span>
+                </div>
+
+                <div class="n-actions">
+                    <a href="{{ url_for('edit_nondni', nondni_id=record.id) }}" class="n-btn edit">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                        {{ t('edit') }}
+                    </a>
+                    <a href="#" class="n-btn view">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        {{ t('view') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="empty-message" id="noMatch" hidden>{{ t('no_nondni_records') }}</div>
+    {% else %}
+    <div class="empty-message">{{ t('no_nondni_records') }}</div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 (function () {
-    var form = document.getElementById('filterForm');
-    var season = document.getElementById('season');
-    var search = document.getElementById('search');
-    var clearBtn = document.getElementById('clearBtn');
+    var form      = document.getElementById('filterForm');
+    var season    = document.getElementById('season');
+    var search    = document.getElementById('search');
+    var clearBtn  = document.getElementById('clearBtn');
     var searchBtn = document.getElementById('searchBtn');
-    var table = document.getElementById('recTable');
+    var grid      = document.getElementById('cardsGrid');
+    var shown     = document.getElementById('shownCount');
+    var noMatch   = document.getElementById('noMatch');
 
+    // Submit when season changes
     season.addEventListener('change', function () {
         searchBtn.disabled = true;
         form.submit();
     });
 
-    if (!table) {
-        clearBtn.hidden = !search.value;
-        search.addEventListener('input', function () { clearBtn.hidden = !search.value; });
-        clearBtn.addEventListener('click', function () { search.value = ''; clearBtn.hidden = true; search.focus(); });
+    // Clear button visibility
+    function toggleClear() { clearBtn.hidden = !search.value; }
+
+    // No cards on page: only keep the clear button working
+    if (!grid) {
+        toggleClear();
+        search.addEventListener('input', toggleClear);
+        clearBtn.addEventListener('click', function () {
+            search.value = '';
+            toggleClear();
+            search.focus();
+        });
         return;
     }
 
-    var tbody = table.tBodies[0];
-    var rows = Array.prototype.slice.call(tbody.rows);
-    var shown = document.getElementById('shownCount');
-    var noMatch = document.getElementById('noMatch');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.n-card'));
 
-    rows.forEach(function (r) {
-        Array.prototype.forEach.call(r.cells, function (c) {
-            if (!c.querySelector('a')) c.setAttribute('data-text', c.textContent.trim());
-        });
-    });
-
-    function esc(s) {
-        return s.replace(/[&<>"']/g, function (ch) {
-            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
-        });
-    }
-    function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
+    // Live filter
     function applyFilter() {
         var q = search.value.trim().toLowerCase();
-        clearBtn.hidden = !search.value;
-        var re = q ? new RegExp('(' + escRe(q) + ')', 'ig') : null;
         var count = 0;
 
-        rows.forEach(function (r) {
-            var hay = '';
-            Array.prototype.forEach.call(r.cells, function (c) {
-                var t = c.getAttribute('data-text');
-                if (t !== null) hay += ' ' + t.toLowerCase();
-            });
-            var match = !q || hay.indexOf(q) !== -1;
-            r.hidden = !match;
+        cards.forEach(function (card) {
+            var match = !q || card.getAttribute('data-search').indexOf(q) !== -1;
+            card.hidden = !match;
             if (match) count++;
-
-            Array.prototype.forEach.call(r.cells, function (c) {
-                var t = c.getAttribute('data-text');
-                if (t === null) return;
-                c.innerHTML = (re && match) ? esc(t).replace(new RegExp('(' + escRe(esc(q)) + ')', 'ig'), '<mark>$1</mark>') : esc(t);
-            });
         });
 
         shown.textContent = count;
         noMatch.hidden = count !== 0;
-        table.parentNode.hidden = count === 0;
+        grid.hidden = count === 0;
+        toggleClear();
     }
 
     search.addEventListener('input', applyFilter);
@@ -433,39 +448,8 @@
         applyFilter();
         search.focus();
     });
-    if (search.value) applyFilter(); else clearBtn.hidden = true;
 
-    // Table Column Sorting
-    var heads = Array.prototype.slice.call(table.tHead.rows[0].cells);
-    heads.forEach(function (th, idx) {
-        if (!th.hasAttribute('data-sort')) return;
-        th.tabIndex = 0;
-        th.setAttribute('role', 'button');
-
-        function sortBy() {
-            var asc = !th.classList.contains('asc');
-            heads.forEach(function (h) { h.classList.remove('asc', 'desc'); });
-            th.classList.add(asc ? 'asc' : 'desc');
-
-            rows.sort(function (a, b) {
-                var x = (a.cells[idx].getAttribute('data-text') || '').trim();
-                var y = (b.cells[idx].getAttribute('data-text') || '').trim();
-                var nx = parseFloat(x.replace(/,/g, '')), ny = parseFloat(y.replace(/,/g, ''));
-                var cmp;
-                if (x === '' && y !== '') cmp = 1;
-                else if (y === '' && x !== '') cmp = -1;
-                else if (!isNaN(nx) && !isNaN(ny) && /^[\d.,\-\s]+$/.test(x) && /^[\d.,\-\s]+$/.test(y)) cmp = nx - ny;
-                else cmp = x.localeCompare(y, undefined, { numeric: true, sensitivity: 'base' });
-                return asc ? cmp : -cmp;
-            });
-            rows.forEach(function (r) { tbody.appendChild(r); });
-        }
-
-        th.addEventListener('click', sortBy);
-        th.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sortBy(); }
-        });
-    });
+    applyFilter();
 })();
 </script>
 {% endblock %}
