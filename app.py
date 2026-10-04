@@ -154,8 +154,18 @@ TRANSLATIONS = {
         "password_changed_successfully": "Password changed successfully.",
         "total_nondni_label": "Total Nondni",
         "total_planting_area": "Total Planting Area",
+        "add_farmers": "Add Farmers",
+"nondni_form": "Nondni Form",
+"total_seasons": "Total Seasons",
+"trips": "Trips",
+"total": "Total",
     },
     "mr": {
+        "add_farmers": "शेतकरी जोडा",
+"nondni_form": "नोंदणी फॉर्म",
+"total_seasons": "एकूण हंगाम",
+"trips": "नोंदणी",
+"total": "एकूण",
         "dashboard": "डॅशबोर्ड",
         "farmers": "शेतकरी",
         "nondni": "नोंदणी",
@@ -392,11 +402,18 @@ TRANSLATIONS = {
         "password_changed_successfully": "पासवर्ड सफलतापूर्वक बदल दिया गया।",
         "total_nondni_label": "कुल पंजीकरण",
         "total_planting_area": "कुल रोपण क्षेत्र",
+        'add_farmers': 'शेतकरी जोडा',
+"add_farmers": "किसान जोड़ें",
+"nondni_form": "पंजीकरण फॉर्म",
+"total_seasons": "कुल सीजन",
+"trips": "पंजीकरण",
+"total": "कुल",
     },
 }
 
 
 @app.context_processor
+
 def inject_translations():
     language = session.get("language", "en")
     return {

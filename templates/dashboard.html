@@ -318,7 +318,7 @@ body {
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
             </div>
-            <span class="action-label">Add Farmers</span>
+            <span class="action-label">{{ t('add_farmers') }}</span>
         </a>
 
         <a href="{{ url_for('nondni_form') if 'nondni_form' in url_for.__globals__ else '/nondni' }}" class="action-card">
@@ -331,7 +331,7 @@ body {
                     <polyline points="10 9 9 9 8 9"/>
                 </svg>
             </div>
-            <span class="action-label">Nondni Form</span>
+            <span class="action-label">{{ t('nondni_form') }}</span>
         </a>
     </div>
 
@@ -349,9 +349,9 @@ body {
                         <path d="M15 4l-3-2-3 2"/>
                     </svg>
                 </div>
-                <h3 class="kpi-title">Farmer<br>Records</h3>
+                <h3 class="kpi-title">{{ t('total_farmers') }}</h3>
                 <div class="kpi-stat-text">
-                    Total: <span class="num-counter" data-count="{{ farmer_count or 1234 }}">{{ farmer_count or 1234 }}</span>
+                    Total: <span class="num-counter" data-count="{{ farmer_count or 1234 }}">{{ farmer_count or 0 }}</span>
                 </div>
             </div>
 
@@ -365,9 +365,9 @@ body {
                         <path d="M3 20h18"/>
                     </svg>
                 </div>
-                <h3 class="kpi-title">Mill<br>Operations</h3>
+                <h3 class="kpi-title">{{ t('total_seasons') }}</h3>
                 <div class="kpi-stat-text">
-                    Efficiency: <span>88%</span>
+                    <p class="num" data-count="{{ seasons|length }}">{{ seasons|length }}</p>
                 </div>
             </div>
 
@@ -381,9 +381,9 @@ body {
                         <circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
                 </div>
-                <h3 class="kpi-title">Transport<br>Management</h3>
+                <h3 class="kpi-title">{{ t('total_nondni') }}</h3>
                 <div class="kpi-stat-text">
-                    Trips: <span class="num-counter" data-count="{{ nondni_count or 450 }}">{{ nondni_count or 450 }}</span>
+                    Trips: <span class="num-counter" data-count="{{ nondni_count }}">{{ nondni_count }}</span>
                 </div>
             </div>
 
@@ -396,9 +396,9 @@ body {
                         <line x1="6" y1="20" x2="6" y2="14"/>
                     </svg>
                 </div>
-                <h3 class="kpi-title">Reports &<br>Analytics</h3>
+                <h3 class="kpi-title">{{ t('total_area') }}</h3>
                 <div class="kpi-stat-text">
-                    Growth: <span>+15%</span>
+                      Total: <span class="num-counter" data-count="{{total }}">{{ total_area or 0 }}</span>
                 </div>
             </div>
 
