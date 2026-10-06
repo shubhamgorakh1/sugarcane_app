@@ -44,7 +44,7 @@ TRANSLATIONS = {
 "all_seasons": "All Seasons",
 "planting_area_unit": "Planting Area",
 "no_season_planting_data": "No planting-area data available.",
-"total_planting_area": "Total Planting Area",
+"total_area": "Total Area",
 
         "dashboard": "Dashboard",
         "farmers": "Farmers",
@@ -177,7 +177,7 @@ TRANSLATIONS = {
 "all_seasons": "सर्व हंगाम",
 "planting_area_unit": "लागवड क्षेत्र",
 "no_season_planting_data": "लागवड क्षेत्राची माहिती उपलब्ध नाही.",
-"total_planting_area": "एकूण लागवड क्षेत्र",
+"total_area": "एकूण लागवड क्षेत्र",
 
         "add_farmers": "शेतकरी जोडा",
 "nondni_form": "नोंदणी फॉर्म",
@@ -310,7 +310,7 @@ TRANSLATIONS = {
 "all_seasons": "सभी सीजन",
 "planting_area_unit": "रोपण क्षेत्र",
 "no_season_planting_data": "रोपण क्षेत्र का कोई डेटा उपलब्ध नहीं है।",
-"total_planting_area": "कुल रोपण क्षेत्र",
+"total_area": "कुल रोपण क्षेत्र",
 
         "dashboard": "डैशबोर्ड",
         "farmers": "किसान",
