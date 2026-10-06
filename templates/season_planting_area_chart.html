@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ t('season_wise_planting_area')|default('Season-wise Total Planting Area') }}
+{% endblock %}
+
+{% block page_heading %}
+{{ t('season_wise_planting_area')|default('Season-wise Total Planting Area') }}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.area-chart-card {
+    --cane-dark: #0f5c52;
+    --cane-mid: #1a8f7a;
+    --cane-light: #7fd1a8;
+    --cane-node: #c9d96a;
+    --card-bg: linear-gradient(160deg, #eef6f3 0%, #dcebe6 100%);
+    background: var(--card-bg);
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    border-radius: 22px;
+    box-shadow: 0 16px 36px rgba(18, 51, 38, 0.18);
+    padding: clamp(16px, 3vw, 32px);
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ---------- header ---------- */
+.area-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.area-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(1.3rem, 3.2vw, 2.2rem);
+    line-height: 1.1;
+    font-weight: 800;
+    color: #0c3b35;
+    margin: 0;
+}
+
+.area-sub {
+    margin: 8px 0 0;
+    font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+    color: #254f47;
+}
+
+.area-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.season-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #0c3b35;
+}
+
+.season-picker button {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(15, 92, 82, 0.25);
+    background: rgba(255, 255, 255, 0.7);
+    color: #0c3b35;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.season-picker button:hover { background: #fff; }
+.season-picker button:focus-visible,
+.season-picker select:focus-visible {
+    outline: 2px solid var(--cane-mid);
+    outline-offset: 2px;
+}
+
+.season-picker select {
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 130px;
+    text-align: center;
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(15, 92, 82, 0.25);
+    background: rgba(255, 255, 255, 0.7);
+    color: #0c3b35;
+    font: inherit;
+    cursor: pointer;
+}
+
+.total-chip {
+    padding: 7px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(15, 92, 82, 0.2);
+    box-shadow: 0 4px 12px rgba(18, 51, 38, 0.1);
+    color: #254f47;
+    font-size: 0.95rem;
+}
+
+.total-chip strong { color: #0c3b35; font-size: 1.05rem; }
+
+/* ---------- chart ---------- */
+.chart-panel {
+    margin-top: 22px;
+    padding: clamp(12px, 2.5vw, 24px) clamp(8px, 2vw, 24px) 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+}
+
+.y-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    align-self: center;
+    justify-self: center;
+    grid-row: 1;
+    grid-column: 1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #254f47;
+    display: none;
+}
+
+.plot-wrap {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    column-gap: 8px;
+    grid-column: 1 / -1;
+}
+
+.y-axis {
+    position: relative;
+    height: var(--plot-h);
+}
+
+.y-axis span {
+    position: absolute;
+    right: 0;
+    transform: translateY(50%);
+    font-size: 0.78rem;
+    color: #254f47;
+}
+
+.plot-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-top: 36px;           /* room for top tooltip */
+    margin-top: -36px;
+}
+
+.plot {
+    --plot-h: clamp(220px, 42vw, 360px);
+    position: relative;
+    height: var(--plot-h);
+    min-width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 12px;
+    border-bottom: 2px solid rgba(15, 92, 82, 0.35);
+}
+
+.chart-panel { --plot-h: clamp(220px, 42vw, 360px); }
+
+.gridline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1.5px dashed rgba(15, 92, 82, 0.22);
+    pointer-events: none;
+}
+
+.bar-col {
+    position: relative;
+    z-index: 1;
+    flex: 1 0 clamp(80px, 14vw, 150px);
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.stalk {
+    --seg: clamp(34px, 6vw, 62px);
+    position: relative;
+    width: clamp(44px, 8vw, 84px);
+    height: 0;
+    min-height: 0;
+    border-radius: 10px 10px 6px 6px;
+    background:
+        repeating-linear-gradient(
+            to top,
+            transparent 0,
+            transparent calc(var(--seg) - 7px),
+            rgba(201, 217, 106, 0.95) calc(var(--seg) - 7px),
+            rgba(201, 217, 106, 0.95) calc(var(--seg) - 2px),
+            rgba(10, 60, 52, 0.55) calc(var(--seg) - 2px),
+            rgba(10, 60, 52, 0.55) var(--seg)
+        ),
+        linear-gradient(90deg, #0c4a43 0%, #1a8f7a 38%, #7fd1a8 62%, #14705f 100%);
+    box-shadow: 0 6px 14px rgba(10, 60, 52, 0.28);
+    transition: height 0.7s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* cut-top ellipse */
+.stalk::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 40%, #e9f3a8 0%, #b6cf5a 70%, #8aa83c 100%);
+    border: 1px solid rgba(10, 60, 52, 0.4);
+}
+
+.leaf {
+    position: absolute;
+    top: -22px;
+    width: clamp(26px, 4.5vw, 52px);
+    height: auto;
+    pointer-events: none;
+}
+.leaf.left  { right: 70%; transform: rotate(-8deg); }
+.leaf.right { left: 70%;  transform: scaleX(-1) rotate(-8deg); }
+
+.bar-tip {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translate(-50%, -12px);
+    white-space: nowrap;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid rgba(15, 92, 82, 0.2);
+    box-shadow: 0 4px 10px rgba(18, 51, 38, 0.15);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0c3b35;
+}
+
+.bar-tip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    margin-left: -5px;
+    border: 5px solid transparent;
+    border-top-color: #fff;
+}
+
+.x-labels {
+    display: flex;
+    justify-content: space-around;
+    gap: 12px;
+    margin-top: 8px;
+    min-width: 100%;
+}
+
+.x-labels span {
+    flex: 1 0 clamp(80px, 14vw, 150px);
+    text-align: center;
+    font-size: 0.85rem;
+    color: #254f47;
+}
+
+.x-title {
+    text-align: center;
+    margin-top: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #254f47;
+}
+
+.chart-empty {
+    text-align: center;
+    padding: 60px 12px;
+    color: #254f47;
+}
+
+/* ---------- breakpoints ---------- */
+@media (min-width: 640px) {
+    .y-title { display: block; grid-column: 1; }
+    .plot-wrap { grid-column: 2; }
+    .chart-grid { grid-template-columns: 22px 1fr; }
+}
+
+@media (max-width: 639px) {
+    .area-controls { align-items: stretch; width: 100%; }
+    .season-picker { justify-content: space-between; }
+    .season-picker select { flex: 1; }
+    .total-chip { text-align: center; }
+    .plot-wrap { grid-template-columns: 30px 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stalk { transition: none; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="chartData" hidden
+     data-label-all="{{ t('all_seasons') }}"
+     data-label-area="{{ t('planting_area_unit') }}"
+     data-label-empty="{{ t('no_season_planting_data') }}">
+
+    {% for row in season_area_data|default([]) %}
+
+    <span
+        data-season="{{ row.season }}"
+        data-area="{{ row.total_area|float }}"
+    ></span>
+
+    {% endfor %}
+
+</div>
+
+    <div class="area-head">
+        <div>
+ <h2 class="area-title" id="areaTitle">
+    {{ t('sugarcane_season_wise_planting_area') }}
+</h2>
+
+<p class="area-sub">
+    {{ t('select_season_hint') }}
+</p>
+        </div>
+
+        <div class="area-controls">
+            <div class="season-picker">
+                <button type="button" id="prevSeason" aria-label="Previous season">&lsaquo;</button>
+              <select
+    id="seasonSelect"
+    aria-label="{{ t('sugarcane_planting_season') }}"
+></select>
+                <button type="button" id="nextSeason" aria-label="Next season">&rsaquo;</button>
+            </div>
+           <div class="total-chip">
+    {{ t('total_planting_area') }}:
+    <strong id="totalArea">0.00</strong>
+</div>
+        </div>
+    </div>
+
+    <div class="chart-panel">
+        <div class="chart-grid">
+<div class="y-title">
+    {{ t('total_planting_area') }}
+</div>
+            <div class="plot-wrap" id="plotWrap">
+                <div class="y-axis" id="yAxis"></div>
+                <div>
+                    <div class="plot-scroll" id="plotScroll">
+                        <div class="plot" id="plot"></div>
+                        <div class="x-labels" id="xLabels"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <div class="x-title">
+    {{ t('sugarcane_planting_season') }}
+</div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    /* Data is read from the hidden #chartData element (no template code in JS). */
+    const store = document.getElementById('chartData');
+    const DATA = Array.from(store.querySelectorAll('[data-season]')).map(el => ({
+        season_name: el.dataset.season,
+        area: parseFloat(el.dataset.area) || 0
+    }));
+
+    const ALL = 'all';
+    const LABEL_ALL = store.dataset.labelAll;
+    const LABEL_AREA = store.dataset.labelArea;
+    const LABEL_EMPTY = store.dataset.labelEmpty;
+
+    const select = document.getElementById('seasonSelect');
+    const plot = document.getElementById('plot');
+    const yAxis = document.getElementById('yAxis');
+    const xLabels = document.getElementById('xLabels');
+    const totalEl = document.getElementById('totalArea');
+    const plotWrap = document.getElementById('plotWrap');
+
+    const options = [ALL].concat(DATA.map(d => d.season_name));
+    options.forEach(v => {
+        const o = document.createElement('option');
+        o.value = v;
+        o.textContent = v === ALL ? LABEL_ALL : v;
+        select.appendChild(o);
+    });
+
+    const leaf = `<svg class="leaf LEFTRIGHT" viewBox="0 0 60 50" aria-hidden="true">
+        <path d="M58 46 C40 40 18 28 2 4 C28 8 48 24 58 46Z" fill="#2fa56f"/>
+        <path d="M58 46 C38 36 22 22 2 4" stroke="#0f5c52" stroke-width="1.5" fill="none" opacity=".6"/>
+    </svg>`;
+
+    function niceMax(v) {
+        if (v <= 0) return 1;
+        const pow = Math.pow(10, Math.floor(Math.log10(v)));
+        const n = v / pow;
+        const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+        return step * pow;
+    }
+
+    function render() {
+        const sel = select.value;
+        const rows = sel === ALL ? DATA : DATA.filter(d => d.season_name === sel);
+        const total = rows.reduce((s, d) => s + Number(d.area || 0), 0);
+        totalEl.textContent = total.toFixed(2);
+
+        plot.innerHTML = '';
+        yAxis.innerHTML = '';
+        xLabels.innerHTML = '';
+
+        if (!rows.length) {
+            plot.innerHTML = '<div class="chart-empty">' + LABEL_EMPTY + '</div>';
+            return;
+        }
+
+        const max = niceMax(Math.max.apply(null, rows.map(d => Number(d.area) || 0)));
+        const ticks = 5;
+
+        for (let i = 0; i <= ticks; i++) {
+            const pct = (i / ticks) * 100;
+            const val = (max * i / ticks);
+            const t = document.createElement('span');
+            t.style.bottom = pct + '%';
+            t.textContent = val % 1 === 0 ? val.toFixed(1) : val.toFixed(1);
+            yAxis.appendChild(t);
+            if (i > 0) {
+                const g = document.createElement('div');
+                g.className = 'gridline';
+                g.style.bottom = pct + '%';
+                plot.appendChild(g);
+            }
+        }
+
+        const stalks = [];
+        rows.forEach(d => {
+            const col = document.createElement('div');
+            col.className = 'bar-col';
+            const area = Number(d.area) || 0;
+            const stalk = document.createElement('div');
+            stalk.className = 'stalk';
+            stalk.setAttribute('role', 'img');
+            stalk.setAttribute('aria-label', d.season_name + ': ' + area.toFixed(1) + ' ' + LABEL_AREA);
+            stalk.innerHTML =
+                leaf.replace('LEFTRIGHT', 'left') +
+                leaf.replace('LEFTRIGHT', 'right') +
+                '<div class="bar-tip">' + area.toFixed(1) + ' ' + LABEL_AREA + '</div>';
+            col.appendChild(stalk);
+            plot.appendChild(col);
+            stalks.push([stalk, (area / max) * 100]);
+
+            const x = document.createElement('span');
+            x.textContent = d.season_name;
+            xLabels.appendChild(x);
+        });
+
+        /* grow animation */
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            stalks.forEach(([el, pct]) => { el.style.height = pct + '%'; });
+        }));
+    }
+
+    function step(dir) {
+        const i = options.indexOf(select.value);
+        select.value = options[(i + dir + options.length) % options.length];
+        render();
+    }
+
+    document.getElementById('prevSeason').addEventListener('click', () => step(-1));
+    document.getElementById('nextSeason').addEventListener('click', () => step(1));
+    select.addEventListener('change', render);
+
+    render();
+})();
+</script>
+{% endblock %}

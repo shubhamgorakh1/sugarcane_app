@@ -175,6 +175,11 @@ body {
     align-items: flex-start;
     box-shadow: var(--shadow-soft);
     transition: transform 0.2s ease, background-color 0.2s;
+   
+}
+
+.kpi-section-wrapper a{
+    text-decoration : none;
 }
 
 .kpi-card:hover {
@@ -340,6 +345,7 @@ body {
         <div class="kpi-grid">
 
             <!-- Farmer Records -->
+              <a href="{{ url_for('farmers') if 'nondni_form' in url_for.__globals__ else '/farmers' }}">
             <div class="kpi-card">
                 <div class="kpi-icon-circle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -354,8 +360,10 @@ body {
                     Total: <span class="num-counter" data-count="{{ farmer_count or 1234 }}">{{ farmer_count or 0 }}</span>
                 </div>
             </div>
+            </a>
 
             <!-- Mill Operations -->
+              <a href="{{ url_for('seasons') if 'seasons' in url_for.__globals__ else '/seasons' }}">
             <div class="kpi-card">
                 <div class="kpi-icon-circle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -370,8 +378,10 @@ body {
                     <p class="num" data-count="{{ seasons|length }}">{{ seasons|length }}</p>
                 </div>
             </div>
+            </a>
 
             <!-- Transport Management -->
+              <a href="{{ url_for('nondnis') if 'nondnis' in url_for.__globals__ else '/nondnis' }}">
             <div class="kpi-card">
                 <div class="kpi-icon-circle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -386,8 +396,10 @@ body {
                     Trips: <span class="num-counter" data-count="{{ nondni_count }}">{{ nondni_count }}</span>
                 </div>
             </div>
+            </a>
 
             <!-- Reports & Analytics -->
+             <a href="{{ url_for('season_planting_area') }}">
             <div class="kpi-card">
                 <div class="kpi-icon-circle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -404,6 +416,7 @@ body {
 
         </div>
     </div>
+     </a>
 
     <!-- Optional Info Banner -->
     <div class="info-card" id="infoCard">

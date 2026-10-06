@@ -37,6 +37,15 @@ app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 
 TRANSLATIONS = {
     "en": {
+        "season_wise_planting_area": "season_wise_planting_area",
+        "sugarcane_season_wise_planting_area": "Sugarcane Planting Area - Season-wise",
+"sugarcane_planting_season": "Sugarcane Planting Season",
+"select_season_hint": "Select all seasons or one specific season.",
+"all_seasons": "All Seasons",
+"planting_area_unit": "Planting Area",
+"no_season_planting_data": "No planting-area data available.",
+"total_planting_area": "Total Planting Area",
+
         "dashboard": "Dashboard",
         "farmers": "Farmers",
         "nondni": "Nondni",
@@ -161,6 +170,15 @@ TRANSLATIONS = {
 "total": "Total",
     },
     "mr": {
+           "season_wise_planting_area": "हंगामनिहाय ऊस लागवड क्षेत्र",
+        "sugarcane_season_wise_planting_area": "हंगामनिहाय ऊस लागवड क्षेत्र",
+"sugarcane_planting_season": "ऊस लागवड हंगाम",
+"select_season_hint": "सर्व हंगाम किंवा एक विशिष्ट हंगाम निवडा.",
+"all_seasons": "सर्व हंगाम",
+"planting_area_unit": "लागवड क्षेत्र",
+"no_season_planting_data": "लागवड क्षेत्राची माहिती उपलब्ध नाही.",
+"total_planting_area": "एकूण लागवड क्षेत्र",
+
         "add_farmers": "शेतकरी जोडा",
 "nondni_form": "नोंदणी फॉर्म",
 "total_seasons": "एकूण हंगाम",
@@ -285,6 +303,15 @@ TRANSLATIONS = {
         "total_planting_area": "एकूण लागवड क्षेत्र",
     },
     "hi": {
+        "season_wise_planting_area":"सीजनवार गन्ना रोपण क्षेत्र",
+        "sugarcane_season_wise_planting_area": "सीजनवार गन्ना रोपण क्षेत्र",
+"sugarcane_planting_season": "गन्ना रोपण सीजन",
+"select_season_hint": "सभी सीजन या किसी एक सीजन का चयन करें।",
+"all_seasons": "सभी सीजन",
+"planting_area_unit": "रोपण क्षेत्र",
+"no_season_planting_data": "रोपण क्षेत्र का कोई डेटा उपलब्ध नहीं है।",
+"total_planting_area": "कुल रोपण क्षेत्र",
+
         "dashboard": "डैशबोर्ड",
         "farmers": "किसान",
         "nondni": "पंजीकरण",
@@ -1170,8 +1197,42 @@ def nondnis():
         search=search,
         seasons=seasons
     )
+# ///////////////////////// ------------------- total-sugar-cane-planting-season-wise-----------------------------//////////////////////
+@app.route("/season-planting-area")
+def season_planting_area():
+
+    if "admin_id" not in session:
+        return redirect(url_for("login"))
+
+    # Get available seasons
+    seasons = get_active_seasons()
+
+    # Get season-wise planting area
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+            season,
+            COALESCE(SUM(planting_area), 0) AS total_area
+        FROM sugarcane_registrations
+        GROUP BY season
+        ORDER BY season ASC
+    """)
+
+    season_area_data = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "season_planting_area_chart.html",
+        seasons=seasons,
+        season_area_data=season_area_data
+    )
 
 
+# ............................................................................
 @app.route("/edit-nondni/<int:nondni_id>", methods=["GET", "POST"])
 def edit_nondni(nondni_id):
     if "admin_id" not in session:
