@@ -1,237 +1,979 @@
 {% extends "base.html" %}
 
 {% block title %}
-{{ t('reports_title') }}
+    {{ t('reports_title') }} - Sugarcane ERP
 {% endblock %}
 
 {% block page_heading %}
-{{ t('reports_title') }}
+    {{ t('reports_title') }}
 {% endblock %}
 
 {% block extra_css %}
 <style>
-.report-filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
+    /* =========================================================
+       SUGARCANE ERP - REPORTS PAGE
+       Responsive + clean dashboard style
+       ========================================================= */
 
-.report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    margin: 28px 0 16px;
-    flex-wrap: wrap;
-}
-
-.report-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    margin-bottom: 22px;
-}
-
-.report-stat-card {
-    background: var(--surface);
-    padding: 22px;
-    border-radius: var(--radius-md);
-    border: 1.5px solid var(--line);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
-}
-
-.report-stat-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    background: var(--stalk);
-}
-
-.report-stat-card.tone-amber::before {
-    background: var(--juice);
-}
-
-.report-stat-card h3 {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--muted);
-    margin-bottom: 8px;
-}
-
-.report-stat-card .val {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--stalk-dark);
-    letter-spacing: -0.02em;
-}
-
-.empty-card {
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    border: 1.5px dashed var(--line);
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--muted);
-}
-
-.empty-card h3 {
-    font-family: 'Bricolage Grotesque', sans-serif;
-    color: var(--ink);
-    margin-bottom: 6px;
-}
-
-@media (max-width: 650px) {
-    .report-stats-grid {
-        grid-template-columns: 1fr;
+    .reports-page {
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 4px 0 32px;
     }
-}
+
+    .reports-hero {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+        padding: 26px 28px;
+        border-radius: 20px;
+        background:
+            radial-gradient(circle at 88% 15%, rgba(255,255,255,.18), transparent 28%),
+            linear-gradient(135deg, #166534 0%, #15803d 52%, #16a34a 100%);
+        color: #fff;
+        box-shadow: 0 14px 35px rgba(22, 101, 52, .18);
+    }
+
+    .reports-hero::after {
+        content: "";
+        position: absolute;
+        width: 170px;
+        height: 170px;
+        right: -45px;
+        bottom: -75px;
+        border: 30px solid rgba(255,255,255,.08);
+        border-radius: 50%;
+    }
+
+    .reports-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .reports-hero-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        padding: 6px 11px;
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .reports-hero h2 {
+        margin: 0 0 7px;
+        font-size: clamp(22px, 3vw, 31px);
+        line-height: 1.2;
+    }
+
+    .reports-hero p {
+        max-width: 760px;
+        margin: 0;
+        color: rgba(255,255,255,.86);
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .report-filter-card {
+        margin-bottom: 22px;
+        padding: 24px;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, .07);
+    }
+
+    .filter-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .filter-title {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin: 0;
+        color: #111827;
+        font-size: 18px;
+        font-weight: 750;
+    }
+
+    .filter-title-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: #ecfdf5;
+        font-size: 19px;
+    }
+
+    .filter-subtitle {
+        margin: 4px 0 0 49px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .report-filter-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr 1.25fr 1fr 1fr;
+        gap: 16px;
+        align-items: end;
+    }
+
+    .report-field {
+        min-width: 0;
+    }
+
+    .report-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .report-field select,
+    .report-field input {
+        width: 100%;
+        min-height: 44px;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 11px;
+        outline: none;
+        background: #fff;
+        color: #111827;
+        font-size: 14px;
+        transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .report-field select:focus,
+    .report-field input:focus {
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, .12);
+    }
+
+    .report-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid #f0f2f4;
+    }
+
+    .report-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 10px 17px;
+        border: 0;
+        border-radius: 11px;
+        font-size: 13px;
+        font-weight: 750;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .report-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .report-btn-primary {
+        background: #15803d;
+        color: #fff;
+        box-shadow: 0 7px 18px rgba(21, 128, 61, .20);
+    }
+
+    .report-btn-primary:hover {
+        background: #166534;
+    }
+
+    .report-btn-secondary {
+        background: #f3f4f6;
+        color: #1f2937;
+        border: 1px solid #e5e7eb;
+    }
+
+    .report-btn-pdf {
+        background: #b91c1c;
+        color: #fff;
+        box-shadow: 0 7px 18px rgba(185, 28, 28, .16);
+    }
+
+    .report-btn-pdf:hover {
+        background: #991b1b;
+    }
+
+    .report-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .summary-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 112px;
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 17px;
+        background: #fff;
+        box-shadow: 0 7px 23px rgba(15, 23, 42, .06);
+    }
+
+    .summary-card::after {
+        content: "";
+        position: absolute;
+        right: -22px;
+        bottom: -35px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #f0fdf4;
+    }
+
+    .summary-icon {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 37px;
+        height: 37px;
+        border-radius: 10px;
+        background: #f0fdf4;
+        font-size: 18px;
+    }
+
+    .summary-label {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 7px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .035em;
+    }
+
+    .summary-value {
+        position: relative;
+        z-index: 1;
+        color: #111827;
+        font-size: 25px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .summary-note {
+        position: relative;
+        z-index: 1;
+        margin-top: 5px;
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+    .report-result-card {
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, .07);
+    }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 19px 22px;
+        border-bottom: 1px solid #eef0f2;
+    }
+
+    .result-heading {
+        margin: 0;
+        color: #111827;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .result-meta {
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .report-table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: collapse;
+    }
+
+    .report-table th {
+        padding: 13px 12px;
+        border-bottom: 1px solid #dfe4e8;
+        background: #f8fafc;
+        color: #4b5563;
+        font-size: 11px;
+        font-weight: 800;
+        text-align: left;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: .035em;
+    }
+
+    .report-table td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #f0f2f4;
+        color: #374151;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .report-table tbody tr {
+        transition: background .15s ease;
+    }
+
+    .report-table tbody tr:hover {
+        background: #f8fffa;
+    }
+
+    .report-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .serial-cell {
+        color: #9ca3af;
+        font-weight: 700;
+    }
+
+    .farmer-code-badge {
+        display: inline-flex;
+        padding: 5px 8px;
+        border-radius: 7px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .farmer-name {
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .area-value {
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 55px 22px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 14px;
+        border-radius: 18px;
+        background: #f0fdf4;
+        font-size: 29px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 6px;
+        color: #1f2937;
+        font-size: 17px;
+    }
+
+    .empty-state p {
+        max-width: 470px;
+        margin: 0 auto;
+        color: #9ca3af;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .hidden-field {
+        display: none !important;
+    }
+
+    .selection-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 13px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1150px) {
+        .report-filter-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 800px) {
+        .reports-page {
+            padding-bottom: 20px;
+        }
+
+        .reports-hero {
+            padding: 22px 20px;
+            border-radius: 16px;
+        }
+
+        .report-filter-card {
+            padding: 18px;
+            border-radius: 15px;
+        }
+
+        .report-filter-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .report-summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+            min-height: 96px;
+        }
+
+        .result-header {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 17px;
+        }
+    }
+
+    @media (max-width: 560px) {
+        .reports-hero {
+            margin-bottom: 15px;
+            padding: 19px 16px;
+        }
+
+        .reports-hero h2 {
+            font-size: 22px;
+        }
+
+        .reports-hero p {
+            font-size: 12px;
+        }
+
+        .report-filter-card {
+            padding: 15px;
+        }
+
+        .filter-header {
+            margin-bottom: 15px;
+        }
+
+        .filter-subtitle {
+            margin-left: 0;
+            margin-top: 6px;
+        }
+
+        .report-filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .report-actions {
+            flex-direction: column;
+        }
+
+        .report-btn {
+            width: 100%;
+        }
+
+        .report-table {
+            min-width: 1000px;
+        }
+
+        .result-header {
+            padding: 15px;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="reports-page">
 
-<div class="page-header">
-    <div>
-        <h2>📈 {{ t('custom_date_report') }}</h2>
-        <p>{{ t('reports_description') }}</p>
-    </div>
-</div>
-
-<div class="form-card" style="margin-bottom: 24px;">
-    <form method="GET" action="{{ url_for('reports') }}">
-        <input type="hidden" name="report_type" value="custom">
-
-        <div class="report-filter-grid">
-            <div class="form-group">
-                <label for="season">{{ t('season') }}</label>
-                <select name="season" id="season">
-                    <option value="{{ season }}">{{ season }}</option>
-                    {% for s in seasons|default([]) %}
-                        {% if s.season_name != season %}
-                            <option value="{{ s.season_name }}">{{ s.season_name }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
+    <!-- HERO -->
+    <section class="reports-hero">
+        <div class="reports-hero-content">
+            <div class="reports-hero-kicker">
+                📊 {{ t('reports_title') }}
             </div>
 
-            <div class="form-group">
-                <label for="from_date">{{ t('from_date') }}</label>
-                <input
-                    type="date"
-                    name="from_date"
-                    id="from_date"
-                    value="{{ from_date or '' }}"
-                >
-            </div>
+            <h2>{{ t('custom_date_report') }}</h2>
 
-            <div class="form-group">
-                <label for="to_date">{{ t('to_date') }}</label>
-                <input
-                    type="date"
-                    name="to_date"
-                    id="to_date"
-                    value="{{ to_date or '' }}"
-                >
+            <p>
+                {{ t('reports_description') }}
+            </p>
+        </div>
+    </section>
+
+    <!-- FILTER -->
+    <section class="report-filter-card">
+
+        <div class="filter-header">
+            <div>
+                <h3 class="filter-title">
+                    <span class="filter-title-icon">🔎</span>
+                    {{ t('reports_title') }}
+                </h3>
+
+                <p class="filter-subtitle">
+                    Select the report type, season and date range.
+                </p>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary">
-            🔍 {{ t('generate_report') }}
-        </button>
-    </form>
-</div>
+        <form method="GET" action="{{ url_for('reports') }}" id="reportForm">
 
-{% if report_data %}
-<div class="report-header">
-    <div>
-        <h2>{{ t('report_summary') }}</h2>
-        <p style="color: var(--muted); font-size: 0.95rem;">
-            {{ t('season') }}: <strong>{{ season }}</strong>
-            {% if start_date and end_date %}
-                &nbsp;|&nbsp;
-                {{ t('report_period') }}: <strong>{{ start_date }}</strong> — <strong>{{ end_date }}</strong>
+            <div class="report-filter-grid">
+
+                <!-- REPORT TYPE -->
+                <div class="report-field">
+                    <label for="report_type">
+                        {{ t('report_type') }}
+                    </label>
+
+                    <select
+                        name="report_type"
+                        id="report_type"
+                        onchange="toggleVillageField()"
+                    >
+                        <option
+                            value="date"
+                            {% if report_type == 'date' %}selected{% endif %}
+                        >
+                            {{ t('date_wise_report') }}
+                        </option>
+
+                        <option
+                            value="village_date"
+                            {% if report_type == 'village_date' %}selected{% endif %}
+                        >
+                            {{ t('village_date_wise_report') }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- SEASON -->
+                <div class="report-field">
+                    <label for="season">
+                        {{ t('season') }}
+                    </label>
+
+                    <select name="season" id="season">
+                        {% for s in seasons %}
+                            <option
+                                value="{{ s.season_name }}"
+                                {% if s.season_name == season %}selected{% endif %}
+                            >
+                                {{ s.season_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- VILLAGE -->
+                <div
+                    class="report-field"
+                    id="village-field"
+                    style="display:none;"
+                >
+                    <label for="village">
+                        {{ t('select_village') }}
+                    </label>
+
+                    <select name="village" id="village">
+                        <option value="">
+                            {{ t('select_village') }}
+                        </option>
+
+                        {% for v in villages %}
+                            <option
+                                value="{{ v.village }}"
+                                {% if v.village == village %}selected{% endif %}
+                            >
+                                {{ v.village }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- FROM DATE -->
+                <div class="report-field">
+                    <label for="from_date">
+                        {{ t('from_date') }}
+                    </label>
+
+                    <input
+                        type="date"
+                        name="from_date"
+                        id="from_date"
+                        value="{{ from_date or '' }}"
+                    >
+                </div>
+
+                <!-- TO DATE -->
+                <div class="report-field">
+                    <label for="to_date">
+                        {{ t('to_date') }}
+                    </label>
+
+                    <input
+                        type="date"
+                        name="to_date"
+                        id="to_date"
+                        value="{{ to_date or '' }}"
+                    >
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="report-actions">
+
+                <button
+                    type="submit"
+                    class="report-btn report-btn-primary"
+                >
+                    🔍 {{ t('generate_report') }}
+                </button>
+
+                {% if from_date and to_date %}
+                    <a
+                        href="{{ url_for(
+                            'reports_pdf',
+                            report_type=report_type,
+                            season=season,
+                            village=village,
+                            from_date=from_date,
+                            to_date=to_date
+                        ) }}"
+                        class="report-btn report-btn-pdf"
+                        target="_blank"
+                    >
+                        📄 {{ t('download_pdf') }}
+                    </a>
+                {% endif %}
+
+                <a
+                    href="{{ url_for('reports') }}"
+                    class="report-btn report-btn-secondary"
+                >
+                    ↻ {{ t('clear') }}
+                </a>
+
+            </div>
+
+        </form>
+
+        {% if report_type == 'village_date' and village %}
+            <div class="selection-chip">
+                📍 {{ t('village') }}: {{ village }}
+            </div>
+        {% endif %}
+
+    </section>
+
+    <!-- SUMMARY -->
+    {% if from_date and to_date %}
+        <section class="report-summary-grid">
+
+            <div class="summary-card">
+                <div class="summary-icon">📋</div>
+
+                <div class="summary-label">
+                    {{ t('total_nondni_label') }}
+                </div>
+
+                <div class="summary-value">
+                    {{ total_nondni }}
+                </div>
+
+                <div class="summary-note">
+                    {{ t('nondni_records') }}
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">🌱</div>
+
+                <div class="summary-label">
+                    {{ t('total_planting_area') }}
+                </div>
+
+                <div class="summary-value">
+                    {{ "%.2f"|format(total_area) }}
+                </div>
+
+                <div class="summary-note">
+                    {{ t('planting_area') }}
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">📅</div>
+
+                <div class="summary-label">
+                    {{ t('report_period') }}
+                </div>
+
+                <div class="summary-value" style="font-size:18px;">
+                    {{ from_date }}
+                </div>
+
+                <div class="summary-note">
+                    → {{ to_date }}
+                </div>
+            </div>
+
+        </section>
+    {% endif %}
+
+    <!-- RESULTS -->
+    <section class="report-result-card">
+
+        <div class="result-header">
+            <div>
+                <h3 class="result-heading">
+                    {% if report_type == 'village_date' %}
+                        {{ t('village_date_wise_report') }}
+                    {% else %}
+                        {{ t('date_wise_report') }}
+                    {% endif %}
+                </h3>
+
+                {% if from_date and to_date %}
+                    <div class="result-meta">
+                        {{ season }}
+                        {% if village and report_type == 'village_date' %}
+                            • {{ village }}
+                        {% endif %}
+                        • {{ from_date }} → {{ to_date }}
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if report_data %}
+                <div class="result-meta">
+                    {{ report_data|length }} {{ t('nondni_records') }}
+                </div>
             {% endif %}
-        </p>
-    </div>
+        </div>
 
-    <a
-        href="{{ url_for(
-            'reports_pdf',
-            report_type='custom',
-            season=season,
-            from_date=from_date,
-            to_date=to_date
-        ) }}"
-        class="btn-secondary"
-        target="_blank"
-    >
-        📄 {{ t('download_pdf') }}
-    </a>
+        {% if report_data %}
+
+            <div class="table-wrap">
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{{ t('farmer_code') }}</th>
+                            <th>{{ t('farmer_name') }}</th>
+                            <th>{{ t('village') }}</th>
+                            <th>{{ t('survey_gat_no') }}</th>
+                            <th>{{ t('planting_date') }}</th>
+                            <th>{{ t('sugarcane_variety') }}</th>
+                            <th>{{ t('crop_type') }}</th>
+                            <th>{{ t('irrigation_method') }}</th>
+                            <th>{{ t('planting_area') }}</th>
+                            <th>{{ t('receipt_no') }}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in report_data %}
+                            <tr>
+
+                                <td class="serial-cell">
+                                    {{ loop.index }}
+                                </td>
+
+                                <td>
+                                    <span class="farmer-code-badge">
+                                        {{ row.farmer_code or '-' }}
+                                    </span>
+                                </td>
+
+                                <td class="farmer-name">
+                                    {{ row.farmer_name or '-' }}
+                                </td>
+
+                                <td>
+                                    {{ row.village or '-' }}
+                                </td>
+
+                                <td>
+                                    {{ row.survey_gat_no or '-' }}
+                                </td>
+
+                                <td>
+                                    {% if row.planting_date %}
+                                        {{ row.planting_date.strftime('%d-%m-%Y') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ row.sugarcane_variety or '-' }}
+                                </td>
+
+                                <td>
+                                    {{ row.crop_type or '-' }}
+                                </td>
+
+                                <td>
+                                    {{ row.irrigation_method or '-' }}
+                                </td>
+
+                                <td class="area-value">
+                                    {{ "%.2f"|format(row.planting_area|float) }}
+                                </td>
+
+                                <td>
+                                    {{ row.receipt_no or '-' }}
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        {% elif from_date and to_date %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    {{ t('no_nondni_records') }}
+                </h3>
+
+                <p>
+                    No Nondni records were found for the selected
+                    season, date range and report filters.
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📊
+                </div>
+
+                <h3>
+                    {{ t('reports_title') }}
+                </h3>
+
+                <p>
+                    Select a report type, season and date range above
+                    to generate your report.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
 </div>
 
-<div class="report-stats-grid">
-    <div class="report-stat-card">
-        <h3>{{ t('total_nondni_label') }}</h3>
-        <div class="val">{{ total_nondni }}</div>
-    </div>
+<script>
+    function toggleVillageField() {
+        const reportType = document.getElementById("report_type");
+        const villageField = document.getElementById("village-field");
+        const villageSelect = document.getElementById("village");
 
-    <div class="report-stat-card tone-amber">
-        <h3>{{ t('total_planting_area') }}</h3>
-        <div class="val">{{ total_area }}</div>
-    </div>
-</div>
+        if (!reportType || !villageField || !villageSelect) {
+            return;
+        }
 
-<div class="table-card">
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>{{ t('farmer_code') }}</th>
-                    <th>{{ t('farmer_name') }}</th>
-                    <th>{{ t('village') }}</th>
-                    <th>{{ t('survey_gat_no') }}</th>
-                    <th>{{ t('planting_date') }}</th>
-                    <th>{{ t('sugarcane_variety') }}</th>
-                    <th>{{ t('crop_type') }}</th>
-                    <th>{{ t('irrigation_method') }}</th>
-                    <th>{{ t('planting_area') }}</th>
-                    <th>{{ t('receipt_no') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in report_data %}
-                <tr>
-                    <td>{{ row.id }}</td>
-                    <td><code>{{ row.farmer_code }}</code></td>
-                    <td><strong>{{ row.farmer_name }}</strong></td>
-                    <td>{{ row.village }}</td>
-                    <td>{{ row.survey_gat_no or '-' }}</td>
-                    <td>{{ row.planting_date or '-' }}</td>
-                    <td>{{ row.sugarcane_variety or '-' }}</td>
-                    <td>{{ row.crop_type or '-' }}</td>
-                    <td>{{ row.irrigation_method or '-' }}</td>
-                    <td>{{ row.planting_area or '-' }}</td>
-                    <td>{{ row.receipt_no or '-' }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+        if (reportType.value === "village_date") {
+            villageField.style.display = "block";
+            villageSelect.required = true;
+        } else {
+            villageField.style.display = "none";
+            villageSelect.required = false;
+        }
+    }
 
-{% else %}
-<div class="empty-card">
-    <h3>{{ t('no_report_data') }}</h3>
-    <p>{{ t('select_dates_message') }}</p>
-</div>
-{% endif %}
+    document.addEventListener("DOMContentLoaded", function () {
+        toggleVillageField();
+
+        const fromDate = document.getElementById("from_date");
+        const toDate = document.getElementById("to_date");
+
+        if (fromDate && toDate) {
+            fromDate.addEventListener("change", function () {
+                if (fromDate.value) {
+                    toDate.min = fromDate.value;
+                }
+            });
+
+            toDate.addEventListener("change", function () {
+                if (toDate.value && fromDate.value &&
+                    toDate.value < fromDate.value) {
+                    alert("To Date cannot be earlier than From Date.");
+                    toDate.value = "";
+                }
+            });
+
+            if (fromDate.value) {
+                toDate.min = fromDate.value;
+            }
+        }
+    });
+</script>
 
 {% endblock %}

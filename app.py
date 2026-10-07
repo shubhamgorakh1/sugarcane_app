@@ -119,6 +119,10 @@ TRANSLATIONS = {
         "back_to_records": "Back to Records",
         "reports_title": "Reports",
         "custom_date_report": "Custom Date Report",
+        "report_type": "Report Type",
+        "date_wise_report": "Date-wise Report",
+        "village_date_wise_report": "Village-wise + Date-wise Report",
+        "select_village": "Select Village",
         "reports_description": "Generate a report for a selected season and custom planting-date range.",
         "from_date": "From Date",
         "to_date": "To Date",
@@ -257,6 +261,10 @@ TRANSLATIONS = {
         "back_to_records": "नोंदींकडे परत",
         "reports_title": "अहवाल",
         "custom_date_report": "सानुकूल दिनांक अहवाल",
+        "report_type": "अहवाल प्रकार",
+        "date_wise_report": "दिनांकानुसार अहवाल",
+        "village_date_wise_report": "गावनिहाय + दिनांकानुसार अहवाल",
+        "select_village": "गाव निवडा",
         "reports_description": "निवडलेल्या हंगामासाठी आणि दिनांक श्रेणीसाठी अहवाल तयार करा.",
         "from_date": "पासून दिनांक",
         "to_date": "पर्यंत दिनांक",
@@ -385,6 +393,10 @@ TRANSLATIONS = {
         "back_to_records": "रिकॉर्ड पर वापस जाएं",
         "reports_title": "रिपोर्ट",
         "custom_date_report": "कस्टम दिनांक रिपोर्ट",
+        "report_type": "रिपोर्ट प्रकार",
+        "date_wise_report": "दिनांकवार रिपोर्ट",
+        "village_date_wise_report": "गांववार + दिनांकवार रिपोर्ट",
+        "select_village": "गांव चुनें",
         "reports_description": "चयनित सीजन और दिनांक सीमा के लिए रिपोर्ट बनाएं।",
         "from_date": "प्रारंभ दिनांक",
         "to_date": "अंतिम दिनांक",
@@ -1512,37 +1524,24 @@ def seasons():
 
 # ============================================================
 # REPORTS
-# Custom Date Only
 # ============================================================
 
 def register_pdf_fonts():
     """Register Devanagari fonts for Marathi/Hindi PDF generation."""
-
     base_dir = os.path.dirname(os.path.abspath(__file__))
     font_dir = os.path.join(base_dir, "fonts")
 
-    regular_font = os.path.join(
-        font_dir,
-        "NotoSansDevanagari-Regular.ttf"
-    )
-    bold_font = os.path.join(
-        font_dir,
-        "NotoSansDevanagari-Bold.ttf"
-    )
+    regular_font = os.path.join(font_dir, "NotoSansDevanagari-Regular.ttf")
+    bold_font = os.path.join(font_dir, "NotoSansDevanagari-Bold.ttf")
 
     if not os.path.exists(regular_font):
         raise FileNotFoundError(f"Missing font: {regular_font}")
-
     if not os.path.exists(bold_font):
         raise FileNotFoundError(f"Missing font: {bold_font}")
 
     if "NotoDevanagari" not in pdfmetrics.getRegisteredFontNames():
-        pdfmetrics.registerFont(
-            TTFont("NotoDevanagari", regular_font)
-        )
-        pdfmetrics.registerFont(
-            TTFont("NotoDevanagari-Bold", bold_font)
-        )
+        pdfmetrics.registerFont(TTFont("NotoDevanagari", regular_font))
+        pdfmetrics.registerFont(TTFont("NotoDevanagari-Bold", bold_font))
         pdfmetrics.registerFontFamily(
             "NotoDevanagari",
             normal="NotoDevanagari",
@@ -1551,33 +1550,20 @@ def register_pdf_fonts():
 
 
 def pdf_text(value, bold=False, font_size=6.5, leading=None):
-    """Create a PDF Paragraph using the correct font for the text script."""
-
+    """Create a PDF Paragraph using the correct font."""
     if value is None:
         value = ""
-
     value = str(value)
 
     if leading is None:
         leading = font_size + 1.5
 
-    has_devanagari = any(
-        "\u0900" <= char <= "\u097F"
-        for char in value
-    )
+    has_devanagari = any("\u0900" <= char <= "\u097F" for char in value)
 
     if has_devanagari:
-        font_name = (
-            "NotoDevanagari-Bold"
-            if bold
-            else "NotoDevanagari"
-        )
+        font_name = "NotoDevanagari-Bold" if bold else "NotoDevanagari"
     else:
-        font_name = (
-            "Helvetica-Bold"
-            if bold
-            else "Helvetica"
-        )
+        font_name = "Helvetica-Bold" if bold else "Helvetica"
 
     style = ParagraphStyle(
         name=f"AutoPdf_{font_name}_{font_size}_{bold}",
@@ -1588,10 +1574,75 @@ def pdf_text(value, bold=False, font_size=6.5, leading=None):
         wordWrap="CJK",
     )
 
-    return Paragraph(
-        xml_escape(value),
-        style
-    )
+    return Paragraph(xml_escape(value), style)
+
+
+def get_report_villages():
+    """Return distinct farmer villages for the report filter."""
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT DISTINCT village
+            FROM farmers
+            WHERE village IS NOT NULL
+              AND TRIM(village) <> ''
+            ORDER BY village ASC
+        """)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def get_report_data(season, report_type, village, start_date, end_date):
+    """Fetch report rows using the selected report type."""
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        base_select = """
+            SELECT
+                sr.id,
+                sr.season,
+                sr.survey_gat_no,
+                sr.planting_date,
+                sr.sugarcane_variety,
+                sr.crop_type,
+                sr.irrigation_method,
+                sr.planting_area,
+                sr.receipt_no,
+                f.farmer_code,
+                f.farmer_name,
+                f.village
+            FROM sugarcane_registrations sr
+            JOIN farmers f ON sr.farmer_id = f.id
+        """
+
+        if report_type == "village_date":
+            cursor.execute(
+                base_select + """
+                WHERE sr.season = %s
+                  AND f.village = %s
+                  AND sr.planting_date BETWEEN %s AND %s
+                ORDER BY sr.planting_date ASC, sr.id ASC
+                """,
+                (season, village, start_date, end_date)
+            )
+        else:
+            cursor.execute(
+                base_select + """
+                WHERE sr.season = %s
+                  AND sr.planting_date BETWEEN %s AND %s
+                ORDER BY sr.planting_date ASC, sr.id ASC
+                """,
+                (season, start_date, end_date)
+            )
+
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        connection.close()
 
 
 @app.route("/reports", methods=["GET", "POST"])
@@ -1601,12 +1652,19 @@ def reports():
 
     seasons = get_active_seasons()
 
+    report_type = request.values.get("report_type", "date").strip()
     season = request.values.get("season", "").strip()
+    village = request.values.get("village", "").strip()
     from_date = request.values.get("from_date", "").strip()
     to_date = request.values.get("to_date", "").strip()
 
+    if report_type not in ("date", "village_date"):
+        report_type = "date"
+
     if not season and seasons:
         season = seasons[0]["season_name"]
+
+    villages = get_report_villages()
 
     report_data = []
     total_nondni = 0
@@ -1623,38 +1681,16 @@ def reports():
             end_date = None
 
         if start_date and end_date and start_date <= end_date:
-            connection = get_db_connection()
-            cursor = connection.cursor(dictionary=True)
-
-            cursor.execute("""
-                SELECT
-                    sr.id,
-                    sr.season,
-                    sr.survey_gat_no,
-                    sr.planting_date,
-                    sr.sugarcane_variety,
-                    sr.crop_type,
-                    sr.irrigation_method,
-                    sr.planting_area,
-                    sr.receipt_no,
-                    f.farmer_code,
-                    f.farmer_name,
-                    f.village
-                FROM sugarcane_registrations sr
-                JOIN farmers f ON sr.farmer_id = f.id
-                WHERE sr.season = %s
-                  AND sr.planting_date BETWEEN %s AND %s
-                ORDER BY sr.planting_date ASC, sr.id ASC
-            """, (
-                season,
-                start_date,
-                end_date
-            ))
-
-            report_data = cursor.fetchall()
-
-            cursor.close()
-            connection.close()
+            if report_type == "village_date" and not village:
+                report_data = []
+            else:
+                report_data = get_report_data(
+                    season,
+                    report_type,
+                    village,
+                    start_date,
+                    end_date
+                )
 
             total_nondni = len(report_data)
             total_area = sum(
@@ -1665,8 +1701,11 @@ def reports():
     return render_template(
         "reports.html",
         seasons=seasons,
+        villages=villages,
         report_data=report_data,
+        report_type=report_type,
         season=season,
+        village=village,
         from_date=from_date,
         to_date=to_date,
         start_date=start_date,
@@ -1687,8 +1726,19 @@ def reports_pdf():
         return str(error), 500
 
     season = request.args.get("season", "").strip()
+    report_type = request.args.get("report_type", "date").strip()
+    village = request.args.get("village", "").strip()
     from_date = request.args.get("from_date", "").strip()
     to_date = request.args.get("to_date", "").strip()
+
+    if report_type not in ("date", "village_date"):
+        report_type = "date"
+
+    if not season:
+        return "Season is required", 400
+
+    if report_type == "village_date" and not village:
+        return "Village is required for Village-wise + Date-wise report", 400
 
     try:
         start_date = date.fromisoformat(from_date)
@@ -1696,57 +1746,22 @@ def reports_pdf():
     except ValueError:
         return "Invalid date selection", 400
 
-    if not season:
-        return "Season is required", 400
-
     if start_date > end_date:
         return "From date cannot be greater than To date", 400
 
     language = session.get("language", "en")
-    translations = TRANSLATIONS.get(
-        language,
-        TRANSLATIONS["en"]
-    )
+    translations = TRANSLATIONS.get(language, TRANSLATIONS["en"])
 
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-
-    cursor.execute("""
-        SELECT
-            sr.id,
-            sr.season,
-            sr.survey_gat_no,
-            sr.planting_date,
-            sr.sugarcane_variety,
-            sr.crop_type,
-            sr.irrigation_method,
-            sr.planting_area,
-            sr.receipt_no,
-            f.farmer_code,
-            f.farmer_name,
-            f.village
-        FROM sugarcane_registrations sr
-        JOIN farmers f
-            ON sr.farmer_id = f.id
-        WHERE sr.season = %s
-          AND sr.planting_date BETWEEN %s AND %s
-        ORDER BY sr.planting_date ASC, sr.id ASC
-    """, (
+    report_data = get_report_data(
         season,
+        report_type,
+        village,
         start_date,
         end_date
-    ))
-
-    report_data = cursor.fetchall()
-
-    cursor.close()
-    connection.close()
+    )
 
     total_nondni = len(report_data)
-    total_area = sum(
-        float(row["planting_area"] or 0)
-        for row in report_data
-    )
+    total_area = sum(float(row["planting_area"] or 0) for row in report_data)
 
     pdf_buffer = BytesIO()
 
@@ -1759,16 +1774,8 @@ def reports_pdf():
         bottomMargin=10 * mm
     )
 
-    pdf_font = (
-        "NotoDevanagari"
-        if language in ("mr", "hi")
-        else "Helvetica"
-    )
-    pdf_bold_font = (
-        "NotoDevanagari-Bold"
-        if language in ("mr", "hi")
-        else "Helvetica-Bold"
-    )
+    pdf_font = "NotoDevanagari" if language in ("mr", "hi") else "Helvetica"
+    pdf_bold_font = "NotoDevanagari-Bold" if language in ("mr", "hi") else "Helvetica-Bold"
 
     title_style = ParagraphStyle(
         "PdfTitle",
@@ -1796,49 +1803,23 @@ def reports_pdf():
         "hi": "गन्ना पंजीकरण रिपोर्ट"
     }
 
-    pdf_title = pdf_titles.get(
-        language,
-        pdf_titles["en"]
-    )
+    pdf_title = pdf_titles.get(language, pdf_titles["en"])
+
+    elements.append(Paragraph(xml_escape(pdf_title), title_style))
+
+    season_label = translations.get("season", "Season")
+    report_period_label = translations.get("report_period", "Report Period")
 
     elements.append(
         Paragraph(
-            xml_escape(pdf_title),
-            title_style
-        )
-    )
-
-    season_label = translations.get(
-        "season",
-        "Season"
-    )
-
-    report_period_label = translations.get(
-        "report_period",
-        "Report Period"
-    )
-
-    if language in ("mr", "hi"):
-        period_text = (
-            f"{report_period_label}: "
-            f"{start_date.strftime('%d-%m-%Y')} "
-            f"to "
-            f"{end_date.strftime('%d-%m-%Y')}"
-        )
-    else:
-        period_text = (
-            f"{report_period_label}: "
-            f"{start_date.strftime('%d-%m-%Y')} "
-            f"to "
-            f"{end_date.strftime('%d-%m-%Y')}"
-        )
-
-    elements.append(
-        Paragraph(
-            f"<b>{xml_escape(season_label)}:</b> "
-            f"{xml_escape(season)}",
+            f"<b>{xml_escape(season_label)}:</b> {xml_escape(season)}",
             normal_style
         )
+    )
+
+    period_text = (
+        f"{report_period_label}: "
+        f"{start_date.strftime('%d-%m-%Y')} to {end_date.strftime('%d-%m-%Y')}"
     )
 
     elements.append(
@@ -1851,42 +1832,29 @@ def reports_pdf():
         )
     )
 
+    if report_type == "village_date":
+        village_label = translations.get("village", "Village")
+        elements.append(
+            Paragraph(
+                f"<b>{xml_escape(village_label)}:</b> {xml_escape(village)}",
+                normal_style
+            )
+        )
+
     elements.append(Spacer(1, 10))
 
     summary_data = [
         [
-            pdf_text(
-                translations.get(
-                    "total_nondni_label",
-                    "Total Nondni"
-                ),
-                font_size=8
-            ),
-            pdf_text(
-                total_nondni,
-                font_size=8
-            )
+            pdf_text(translations.get("total_nondni_label", "Total Nondni"), font_size=8),
+            pdf_text(total_nondni, font_size=8)
         ],
         [
-            pdf_text(
-                translations.get(
-                    "total_planting_area",
-                    "Total Planting Area"
-                ),
-                font_size=8
-            ),
-            pdf_text(
-                f"{total_area:.2f}",
-                font_size=8
-            )
+            pdf_text(translations.get("total_planting_area", "Total Planting Area"), font_size=8),
+            pdf_text(f"{total_area:.2f}", font_size=8)
         ]
     ]
 
-    summary_table = Table(
-        summary_data,
-        colWidths=[50 * mm, 35 * mm]
-    )
-
+    summary_table = Table(summary_data, colWidths=[50 * mm, 35 * mm])
     summary_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, -1), colors.lightgrey),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
@@ -1913,8 +1881,7 @@ def reports_pdf():
     for row in report_data:
         planting_date = (
             row["planting_date"].strftime("%d-%m-%Y")
-            if row["planting_date"]
-            else ""
+            if row["planting_date"] else ""
         )
 
         table_data.append([
@@ -1935,17 +1902,8 @@ def reports_pdf():
         table_data,
         repeatRows=1,
         colWidths=[
-            10 * mm,
-            25 * mm,
-            37 * mm,
-            35 * mm,
-            22 * mm,
-            27 * mm,
-            24 * mm,
-            27 * mm,
-            27 * mm,
-            18 * mm,
-            20 * mm
+            10 * mm, 25 * mm, 37 * mm, 35 * mm, 22 * mm,
+            27 * mm, 24 * mm, 27 * mm, 27 * mm, 18 * mm, 20 * mm
         ]
     )
 
@@ -1957,24 +1915,19 @@ def reports_pdf():
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("ALIGN", (0, 0), (0, -1), "CENTER"),
         ("ALIGN", (9, 1), (9, -1), "RIGHT"),
-        (
-            "ROWBACKGROUNDS",
-            (0, 1),
-            (-1, -1),
-            [colors.white, colors.whitesmoke]
-        ),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.whitesmoke]),
     ]))
 
     elements.append(report_table)
-
     document.build(elements)
-
     pdf_buffer.seek(0)
+
+    suffix = f"_{village}" if report_type == "village_date" else ""
 
     return send_file(
         pdf_buffer,
         as_attachment=True,
-        download_name=f"Nondni_Report_{season}.pdf",
+        download_name=f"Nondni_Report_{season}{suffix}.pdf",
         mimetype="application/pdf"
     )
 
