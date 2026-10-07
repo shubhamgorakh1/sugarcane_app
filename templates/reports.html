@@ -715,6 +715,13 @@
 
     </section>
 
+    {% if report_error %}
+        <section class="report-error-card" style="margin: 0 0 20px; padding: 18px 20px; border-radius: 14px; border: 1px solid #fecaca; background: #fef2f2; color: #991b1b;">
+            <div style="font-weight: 800; margin-bottom: 6px;">⚠️ Report generation failed</div>
+            <div style="font-size: 14px; line-height: 1.6;">{{ report_error }}</div>
+        </section>
+    {% endif %}
+
     <!-- SUMMARY -->
     {% if from_date and to_date %}
         <section class="report-summary-grid">
