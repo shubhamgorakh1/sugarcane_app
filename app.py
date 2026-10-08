@@ -1583,11 +1583,11 @@ def get_report_villages():
     cursor = connection.cursor(dictionary=True)
     try:
         cursor.execute("""
-            SELECT DISTINCT village
+            SELECT DISTINCT TRIM(village) AS village
             FROM farmers
             WHERE village IS NOT NULL
               AND TRIM(village) <> ''
-            ORDER BY village ASC
+            ORDER BY TRIM(village) ASC
         """)
         return cursor.fetchall()
     finally:
@@ -1623,7 +1623,7 @@ def get_report_data(season, report_type, village, start_date, end_date):
             cursor.execute(
                 base_select + """
                 WHERE sr.season = %s
-                  AND f.village = %s
+                  AND TRIM(f.village) = TRIM(%s)
                   AND sr.planting_date BETWEEN %s AND %s
                 ORDER BY sr.planting_date ASC, sr.id ASC
                 """,
@@ -1671,7 +1671,6 @@ def reports():
     total_area = 0.0
     start_date = None
     end_date = None
-    report_error = None
 
     if from_date and to_date:
         try:
@@ -1685,18 +1684,13 @@ def reports():
             if report_type == "village_date" and not village:
                 report_data = []
             else:
-                try:
-                    report_data = get_report_data(
-                        season,
-                        report_type,
-                        village,
-                        start_date,
-                        end_date
-                    )
-                except Exception as error:
-                    print("REPORT GENERATION ERROR:", error)
-                    report_error = str(error)
-                    report_data = []
+                report_data = get_report_data(
+                    season,
+                    report_type,
+                    village,
+                    start_date,
+                    end_date
+                )
 
             total_nondni = len(report_data)
             total_area = sum(
@@ -1717,8 +1711,7 @@ def reports():
         start_date=start_date,
         end_date=end_date,
         total_nondni=total_nondni,
-        total_area=total_area,
-        report_error=report_error
+        total_area=total_area
     )
 
 
@@ -1726,6 +1719,11 @@ def reports():
 def reports_pdf():
     if "admin_id" not in session:
         return redirect(url_for("login"))
+
+    try:
+        register_pdf_fonts()
+    except FileNotFoundError as error:
+        return str(error), 500
 
     season = request.args.get("season", "").strip()
     report_type = request.args.get("report_type", "date").strip()
@@ -1753,17 +1751,6 @@ def reports_pdf():
 
     language = session.get("language", "en")
     translations = TRANSLATIONS.get(language, TRANSLATIONS["en"])
-
-    # Devanagari fonts are required only for Marathi/Hindi PDFs.
-    if language in ("mr", "hi"):
-        try:
-            register_pdf_fonts()
-        except FileNotFoundError as error:
-            return (
-                f"Marathi/Hindi PDF font files are missing.\n\n{error}",
-                500,
-                {"Content-Type": "text/plain; charset=utf-8"}
-            )
 
     report_data = get_report_data(
         season,
