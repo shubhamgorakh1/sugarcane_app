@@ -37,6 +37,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "change-this-secret-key")
 
 TRANSLATIONS = {
     "en": {
+        "shubham":"shubham",
         "season_wise_planting_area": "season_wise_planting_area",
         "sugarcane_season_wise_planting_area": "Sugarcane Planting Area - Season-wise",
 "sugarcane_planting_season": "Sugarcane Planting Season",
@@ -196,6 +197,7 @@ TRANSLATIONS = {
         "seasons": "हंगाम",
         "audit_logs": "ऑडिट नोंदी",
         "change_password": "पासवर्ड बदला",
+        "shubham":"shubham",
         "logout": "लॉगआउट",
         "language": "भाषा",
         "welcome": "ऊस ERP मध्ये स्वागत आहे",
